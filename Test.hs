@@ -7,12 +7,10 @@ import Dispatcher
 import YAML
 import YAMLInstances
 
-double :: YamlObject -> IO YamlObject
-double obj = do
-  let (Point x y) = cs obj
-  return $ cs $ Point (x*2) (y*2)
+double :: Point -> IO Point
+double (Point x y) = return $ Point (x*2) (y*2)
 
-rules = mkRules [("double", double)]
+rules = mkRules [("double", yamlMethod double)]
 
 main = do
   putStrLn "Listening..."

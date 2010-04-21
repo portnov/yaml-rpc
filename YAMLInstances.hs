@@ -60,3 +60,9 @@ instance ConvertSuccess YamlObject Call where
 
 instance IsYamlObject Call where
 
+yamlMethod :: (IsYamlObject a, IsYamlObject b) => (a -> IO b) -> YamlObject -> IO YamlObject
+yamlMethod fn = \obj -> do
+  let x = cs obj
+  y <- fn x
+  return $ cs y
+
