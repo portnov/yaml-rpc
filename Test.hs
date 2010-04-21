@@ -1,17 +1,20 @@
 
 import Data.Object.Yaml
 import Data.Convertible.Base
+import qualified Data.Map as M
 
-import Server
+import Dispatcher
 import YAML
 import YAMLInstances
 
-worker :: YamlObject -> IO YamlObject
-worker obj = do
+double :: YamlObject -> IO YamlObject
+double obj = do
   let (Point x y) = cs obj
   return $ cs $ Point (x*2) (y*2)
 
+rules = mkRules [("double", double)]
+
 main = do
-  print "Listening..."
-  server 5000 worker
+  putStrLn "Listening..."
+  dispatcher 5000 rules
   return ()

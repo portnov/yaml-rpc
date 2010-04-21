@@ -24,8 +24,18 @@ getScalar :: (IsYamlScalar a) => YamlObject -> Maybe a
 getScalar (Scalar x) = Just (fromYamlScalar x)
 getScalar _          = Nothing
 
+getList :: YamlObject -> [YamlObject]
+getList (Sequence lst) = lst
+getList _              = []
+
 getScalarAttr :: (IsYamlScalar a) => String -> YamlObject -> Maybe a
 getScalarAttr key obj = getScalar =<< getAttr key obj
+
+getListAttr :: String -> YamlObject -> [YamlObject]
+getListAttr key obj = 
+  case getAttr key obj of
+    Just x -> getList x
+    Nothing -> []
 
 instance IsYamlScalar Double where
   fromYamlScalar (YamlScalar v _ _) = read $ BS.unpack v
