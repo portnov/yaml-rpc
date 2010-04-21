@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts, TypeSynonymInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings #-}
 
 module YAML where
 
@@ -12,7 +12,7 @@ import Text.Libyaml hiding (encode, decode)
 
 class (ConvertSuccess YamlObject a, ConvertSuccess a YamlObject) => IsYamlObject a where
 
-getAttr :: String -> YamlObject -> Maybe YamlObject
+getAttr :: BS.ByteString -> YamlObject -> Maybe YamlObject
 getAttr key (Mapping pairs) = lookup (toYamlScalar key) pairs
 getAttr key (Sequence lst) =
   case catMaybes $ map (getAttr key) lst of
@@ -28,10 +28,10 @@ getList :: YamlObject -> [YamlObject]
 getList (Sequence lst) = lst
 getList _              = []
 
-getScalarAttr :: (IsYamlScalar a) => String -> YamlObject -> Maybe a
+getScalarAttr :: (IsYamlScalar a) => BS.ByteString -> YamlObject -> Maybe a
 getScalarAttr key obj = getScalar =<< getAttr key obj
 
-getListAttr :: String -> YamlObject -> [YamlObject]
+getListAttr :: BS.ByteString -> YamlObject -> [YamlObject]
 getListAttr key obj = 
   case getAttr key obj of
     Just x -> getList x

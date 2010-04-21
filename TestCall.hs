@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 
 import Data.Object.Yaml
 import Data.Convertible.Base

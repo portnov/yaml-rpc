@@ -13,8 +13,8 @@ import Server
 type Worker = YamlObject -> IO YamlObject
 type Rules = M.Map BS.ByteString Worker
 
-mkRules :: [(String,Worker)] -> Rules
-mkRules pairs = M.fromList [(BS.pack name, worker) | (name,worker) <- pairs]
+mkRules :: [(BS.ByteString,Worker)] -> Rules
+mkRules pairs = M.fromList pairs
 
 dispatch :: Rules -> Worker
 dispatch rules = \obj -> 

@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings #-}
 
 module YAMLInstances where
   
@@ -12,10 +12,10 @@ import YAML
 data Point = Point { x :: Double, y :: Double }
   deriving (Show)
 
-object :: [(String, YamlScalar)] -> YamlObject
+object :: [(BS.ByteString, YamlScalar)] -> YamlObject
 object pairs = Mapping [(toYamlScalar name, Scalar val) | (name,val) <- pairs]
 
-field :: (IsYamlScalar a) => String -> a -> YamlObject
+field :: (IsYamlScalar a) => BS.ByteString -> a -> YamlObject
 field name val = Mapping [(toYamlScalar name, Scalar $ toYamlScalar val)]
 
 instance (IsYamlObject a) => ConvertSuccess [a] YamlObject where
@@ -45,17 +45,20 @@ instance IsYamlObject YamlObject where
 data Call = Call { methodName :: BS.ByteString, args :: YamlObject }
   deriving (Show)
 
-mkCall :: String -> YamlObject -> YamlObject
-mkCall name args = cs $ Call (BS.pack name) args
+mkCall :: BS.ByteString -> YamlObject -> YamlObject
+mkCall name args = cs $ Call name args
+
+stringScalar :: String -> YamlScalar
+stringScalar = toYamlScalar
 
 instance ConvertSuccess Call YamlObject where
-  convertSuccess (Call name args) = Mapping [(toYamlScalar "call", Scalar $ toYamlScalar name), 
-                                             (toYamlScalar "args", args)]
+  convertSuccess (Call name args) = Mapping [(stringScalar "call", Scalar $ toYamlScalar name), 
+                                             (stringScalar "args", args)]
 
 instance ConvertSuccess YamlObject Call where
   convertSuccess obj = Call name args
     where
-      name = fromMaybe (BS.pack "defaultMethod") $ getScalarAttr "call" obj
+      name = fromMaybe "defaultMethod" $ getScalarAttr "call" obj
       args = fromMaybe (Sequence []) $ getAttr "args" obj
 
 instance IsYamlObject Call where

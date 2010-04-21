@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 
 module Caller where
 
@@ -12,14 +13,14 @@ import YAML
 import YAMLInstances
 import Server
 
-callDynamic :: (IsYamlObject a, IsYamlObject b) => (String -> IO (String,Int)) -> String -> String -> a -> IO b
+callDynamic :: (IsYamlObject a, IsYamlObject b) => (BS.ByteString -> IO (BS.ByteString,Int)) -> BS.ByteString -> BS.ByteString -> a -> IO b
 callDynamic getServer service name args = do
   srv <- getServer service
   call srv name args
 
-call :: (IsYamlObject a, IsYamlObject b) => (String, Int) -> String -> a -> IO b
+call :: (IsYamlObject a, IsYamlObject b) => (BS.ByteString, Int) -> BS.ByteString -> a -> IO b
 call (host,port) name args = withSocketsDo $ do
-  h <- connectTo host (PortNumber $ fromIntegral port)
+  h <- connectTo (BS.unpack host) (PortNumber $ fromIntegral port)
   let c = mkCall name (cs args)
       s = serialize c
   hSetBuffering h NoBuffering
