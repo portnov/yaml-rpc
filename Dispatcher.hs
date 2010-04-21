@@ -16,13 +16,13 @@ type Rules = M.Map BS.ByteString Worker
 mkRules :: [(String,Worker)] -> Rules
 mkRules pairs = M.fromList [(BS.pack name, worker) | (name,worker) <- pairs]
 
-dispatch :: Rules -> (YamlObject -> IO YamlObject)
-dispatch rules obj = do
+dispatch :: Rules -> Worker
+dispatch rules = \obj -> 
   let call :: Call
       call = cs obj
-  case M.lookup (methodName call) rules of
-    Nothing -> fail $ "Unknown method: " ++ (BS.unpack $ methodName call)
-    Just fn -> fn (args call)
+  in case M.lookup (methodName call) rules of
+      Nothing -> fail $ "Unknown method: " ++ (BS.unpack $ methodName call)
+      Just fn -> fn (args call)
 
 dispatcher :: Int -> Rules -> IO ()
 dispatcher port rules = server port (dispatch rules)

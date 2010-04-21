@@ -45,8 +45,8 @@ instance IsYamlObject YamlObject where
 data Call = Call { methodName :: BS.ByteString, args :: YamlObject }
   deriving (Show)
 
-call :: String -> YamlObject -> YamlObject
-call name args = cs $ Call (BS.pack name) args
+mkCall :: String -> YamlObject -> YamlObject
+mkCall name args = cs $ Call (BS.pack name) args
 
 instance ConvertSuccess Call YamlObject where
   convertSuccess (Call name args) = Mapping [(toYamlScalar "call", Scalar $ toYamlScalar name), 

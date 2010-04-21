@@ -15,16 +15,18 @@ import YAMLInstances
 
 (<+>) = BS.append
 
-read' :: Handle -> [BS.ByteString] -> IO [BS.ByteString]
-read' h acc = do
+readHandle :: Handle -> [BS.ByteString] -> IO [BS.ByteString]
+readHandle h acc = do
     line <- BS.hGetLine h
-    let line' = if (BS.last line)=='\r'
-                  then BS.init line
-                  else line
+    let line' = if BS.null line
+                  then line
+                  else if (BS.last line)=='\r'
+                          then BS.init line
+                          else line
 --           print $ "read line:"++line'
     if BS.null line'
       then return acc
-      else read' h (acc ++ [line'])
+      else readHandle h (acc ++ [line'])
 
 server ::
       Int
@@ -40,13 +42,14 @@ server port callOut = do
          do (h,_nm,_port) <- accept sock
             forkIO
               (do 
-                lns <- read' h []
+                hSetBuffering h NoBuffering
+                lns <- readHandle h []
                 let text = BS.unlines lns
                 case unserialize text of
                   Nothing -> hClose h
                   Just ob -> do
                     print ob
                     res <- callOut ob
-                    BS.hPutStr h $ serialize res
+                    BS.hPutStrLn h $ serialize res
                     hClose h)
 
