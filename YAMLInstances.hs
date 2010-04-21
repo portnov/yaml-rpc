@@ -3,6 +3,7 @@
 module YAMLInstances where
   
 import Data.Maybe
+import Data.Default
 import Data.Object
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
@@ -38,7 +39,13 @@ instance ConvertSuccess YamlObject Point where
       x = fromMaybe 0 $ getScalarAttr "x" obj
       y = fromMaybe 0 $ getScalarAttr "y" obj
 
+instance Default Point where
+  def = Point 0 0
+
 instance IsYamlObject Point where
+
+instance Default YamlObject where
+  def = Sequence []
 
 instance IsYamlObject YamlObject where
 
@@ -60,6 +67,9 @@ instance ConvertSuccess YamlObject Call where
     where
       name = fromMaybe "defaultMethod" $ getScalarAttr "call" obj
       args = fromMaybe (Sequence []) $ getAttr "args" obj
+
+instance Default Call where
+  def = Call "defaultMethod" def
 
 instance IsYamlObject Call where
 

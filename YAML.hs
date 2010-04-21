@@ -4,13 +4,13 @@ module YAML where
 
 import Control.Monad
 import Data.Maybe
--- import Data.Convertible
+import Data.Default
 import Data.Object
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 import Text.Libyaml hiding (encode, decode)
 
-class (ConvertSuccess YamlObject a, ConvertSuccess a YamlObject) => IsYamlObject a where
+class (ConvertSuccess YamlObject a, ConvertSuccess a YamlObject, Default a) => IsYamlObject a where
 
 getAttr :: BS.ByteString -> YamlObject -> Maybe YamlObject
 getAttr key (Mapping pairs) = lookup (toYamlScalar key) pairs
