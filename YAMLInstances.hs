@@ -1,6 +1,12 @@
+{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses #-}
 
 module YAMLInstances where
   
+import Data.Maybe
+-- import Data.Convertible
+import Data.Object
+import Data.Object.Yaml
+
 import YAML
 
 data Point = Point { x :: Double, y :: Double }
@@ -17,4 +23,6 @@ instance ConvertSuccess YamlObject Point where
       y = fromMaybe 0 $ getScalarAttr "y" obj
 
 instance IsYamlObject Point where
+
+instance IsYamlObject YamlObject where
 

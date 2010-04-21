@@ -4,11 +4,11 @@ module YAML where
 
 import Control.Monad
 import Data.Maybe
-import Data.Convertible
+-- import Data.Convertible
 import Data.Object
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
-import Text.Libyaml hiding (encode)
+import Text.Libyaml hiding (encode, decode)
 
 class (ConvertSuccess YamlObject a, ConvertSuccess a YamlObject) => IsYamlObject a where
 
@@ -37,13 +37,21 @@ serialize x =
       c = cs x
   in  encode c
 
-p = Point 3.0 2.0
+unserialize :: IsYamlObject a => BS.ByteString -> Maybe a
+unserialize x =
+  let d :: Maybe YamlObject
+      d = decode x
+  in  case d of
+        Just y -> Just $ cs y
+        Nothing -> Nothing
 
-main = do
-  let s = serialize p
-  BS.putStrLn s
-  let c :: YamlObject
-      c = cs p
-      p' :: Point
-      p' = cs c
-  print p'
+-- p = Point 3.0 2.0
+-- 
+-- main = do
+--   let s = serialize p
+--   BS.putStrLn s
+--   let c :: YamlObject
+--       c = cs p
+--       p' :: Point
+--       p' = cs c
+--   print p'
