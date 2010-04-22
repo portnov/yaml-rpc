@@ -15,9 +15,13 @@ import qualified Data.ByteString.Char8 as BS
 import Network.YAML.Base
 import Network.YAML.Instances
 
-mkList :: [Name] -> Q Exp
+mkList :: [Name] -> ExpQ
 mkList []       = [| [] |]
 mkList (v:vars) = [| (toYamlScalar $(stringOfName v), Scalar $ toYamlScalar $(varE v)): $(mkList vars) |]
+
+mkSeq :: [Name] -> ExpQ
+mkSeq []       = [| [] |]
+mkSeq (v:vars) = [| cs $(varE v): $(mkSeq vars) |]
 
 getNameBase :: Name -> Name
 getNameBase name = mkName $ nameBase name
@@ -37,7 +41,7 @@ consClause (NormalC name fields) =  do
     (pats,vars) <- genPE (length fields)
 
     clause [conP name pats]                                 -- (A x1 x2)
-           (normalB [| Mapping [(toYamlScalar (BS.pack constructorName), Mapping $(mkList vars))] |]) []
+           (normalB [| Mapping [(toYamlScalar (BS.pack constructorName), Sequence $(mkSeq vars))] |]) []
 
 consClause (RecC name fields) = do
     -- Name of constructor, i.e. "A". Will become string literal in generated code
@@ -53,8 +57,7 @@ genFromClause cName names= do
     obj <- newName "obj"
     let guard = [| getFirstKey $(varE obj) == (BS.pack cName) |]
         body = foldl appE (conE $ mkName cName) $ map (getAttr' cName obj) $ map getNameBase names
-    clause [varP obj]
-        (guardedB [normalGE guard body]) []
+    clause [varP obj] (guardedB [normalGE guard body]) []
   where
     getAttr' c obj n = [| fromMaybe def $ getSubKey (BS.pack c) $(stringOfName n) $(varE obj) |]
 
@@ -65,9 +68,16 @@ fromClause (RecC name fields) = do
     genFromClause constructorName names
 
 fromClause (NormalC name fields) = do
-    let constructorName = nameBase name
+    let cName = nameBase name
     (_,names) <- genPE (length fields)
-    genFromClause constructorName names
+    obj <- newName "obj"
+    let guard = [| getFirstKey $(varE obj) == (BS.pack cName) |]
+        body = foldl appE (conE $ mkName cName) $ map (getAttr' cName obj) $ map fst (zip [0..] names)
+    clause [varP obj] (guardedB [normalGE guard body]) []
+  where
+    getAttr' c obj k = [| fromMaybe def $ getItem (BS.pack c) k $(varE obj) |]
+    getName (n,x) = (n, getNameBase x)
+    
 
 -- | Derive `instance ConvertSuccess t YamlObject ...'
 deriveToYamlObject :: Name -> Q [Dec]

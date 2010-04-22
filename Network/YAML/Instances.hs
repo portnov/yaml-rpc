@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings #-}
+{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings, FlexibleInstances #-}
 
 module Network.YAML.Instances where
   
@@ -16,6 +16,9 @@ object pairs = Mapping [(toYamlScalar name, Scalar val) | (name,val) <- pairs]
 field :: (IsYamlScalar a) => BS.ByteString -> a -> YamlObject
 field name val = Mapping [(toYamlScalar name, Scalar $ toYamlScalar val)]
 
+instance Default BS.ByteString where
+  def = BS.empty
+
 instance (IsYamlObject a) => ConvertSuccess [a] YamlObject where
   convertSuccess lst = Sequence $ map cs lst
 
@@ -30,6 +33,30 @@ instance Default YamlObject where
   def = Sequence []
 
 instance IsYamlObject YamlObject where
+
+instance ConvertSuccess YamlObject Double where
+  convertSuccess x = fromMaybe def $ getScalar x
+
+instance ConvertSuccess Double YamlObject where
+  convertSuccess x = Scalar $ toYamlScalar x
+
+instance IsYamlObject Double where
+
+instance ConvertSuccess YamlObject Int where
+  convertSuccess x = fromMaybe def $ getScalar x
+
+instance ConvertSuccess Int YamlObject where
+  convertSuccess x = Scalar $ toYamlScalar x
+
+instance IsYamlObject Int where
+
+instance ConvertSuccess YamlObject BS.ByteString where
+  convertSuccess x = fromMaybe def $ getScalar x
+
+instance ConvertSuccess BS.ByteString YamlObject where
+  convertSuccess x = Scalar $ toYamlScalar x
+
+instance IsYamlObject BS.ByteString where
 
 data Call = Call { methodName :: BS.ByteString, args :: YamlObject }
   deriving (Show)
