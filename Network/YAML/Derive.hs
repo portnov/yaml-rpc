@@ -75,7 +75,7 @@ fromClause (NormalC name fields) = do
         body = foldl appE (conE $ mkName cName) $ map (getAttr' cName obj) $ map fst (zip [0..] names)
     clause [varP obj] (guardedB [normalGE guard body]) []
   where
-    getAttr' c obj k = [| fromMaybe def $ getItem (BS.pack c) k $(varE obj) |]
+    getAttr' c obj k = [| cs $ getItem (BS.pack c) k $(varE obj) |]
     getName (n,x) = (n, getNameBase x)
     
 

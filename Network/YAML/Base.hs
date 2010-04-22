@@ -37,11 +37,11 @@ getSubKey key subkey obj = do
   r <- getAttr subkey attr
   getScalar r
 
-getItem :: (IsYamlScalar a) => BS.ByteString -> Int -> YamlObject -> Maybe a
+getItem :: BS.ByteString -> Int -> YamlObject -> YamlObject
 getItem key k obj = 
   case getListAttr key obj of
-    [] -> Nothing
-    lst -> getScalar (lst !! k)
+    [] ->  Sequence []
+    lst -> lst !! k
 
 getListAttr :: BS.ByteString -> YamlObject -> [YamlObject]
 getListAttr key obj = 
