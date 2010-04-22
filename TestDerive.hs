@@ -6,8 +6,8 @@ import Data.Convertible.Base
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 
-import YAML
-import Derive
+import Network.YAML.Base
+import Network.YAML.Derive
 
 data Test = Test {getX :: Int, getY :: Int}
           | Another {getA :: Double}

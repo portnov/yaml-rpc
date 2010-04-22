@@ -1,14 +1,14 @@
 
-module Dispatcher where
+module Network.YAML.Dispatcher where
 
 import qualified Data.Map as M
 import Data.Object.Yaml
 import Data.Convertible.Base
 import qualified Data.ByteString.Char8 as BS
 
-import YAML
-import YAMLInstances
-import Server
+import Network.YAML.Base
+import Network.YAML.Instances
+import Network.YAML.Server
 
 type Worker = YamlObject -> IO YamlObject
 type Rules = M.Map BS.ByteString Worker

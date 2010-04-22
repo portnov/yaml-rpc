@@ -4,9 +4,11 @@ import Data.Object.Yaml
 import Data.Convertible.Base
 import qualified Data.Map as M
 
-import Dispatcher
-import YAML
-import YAMLInstances
+import Network.YAML.Dispatcher
+import Network.YAML.Base
+import Network.YAML.Instances
+
+import TestTypes
 
 double :: Point -> IO Point
 double (Point x y) = return $ Point (x*2) (y*2)

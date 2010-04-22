@@ -1,13 +1,13 @@
-all: Test TestClient
+all: Test TestCall
 
-Test: *.hs
-	ghc --make Test.hs
+Test: *.hs Network/YAML/*.hs
+	ghc -i. --make Test.hs
 
-TestClient: *.hs
-	ghc --make TestClient.hs
+TestCall: *.hs Network/YAML/*.hs
+	ghc -i. --make TestCall.hs
 
 clean:
-	rm -f *.hi
-	rm -f *.o
+	find . -name *.hi -delete
+	find . -name *.o -delete
 
 

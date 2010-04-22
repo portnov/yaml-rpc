@@ -1,5 +1,5 @@
 
-module Server where
+module Network.YAML.Server where
 
 import Control.Monad 
 import Control.Monad.State
@@ -10,10 +10,8 @@ import System.IO
 import qualified Data.ByteString.Char8 as BS
 import Data.Object.Yaml
 
-import YAML
-import YAMLInstances
-
-(<+>) = BS.append
+import Network.YAML.Base
+import Network.YAML.Instances
 
 readHandle :: Handle -> [BS.ByteString] -> IO [BS.ByteString]
 readHandle h acc = do

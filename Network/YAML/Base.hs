@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, FlexibleContexts, TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings #-}
 
-module YAML where
+module Network.YAML.Base where
 
 import Control.Monad
 import Data.Maybe

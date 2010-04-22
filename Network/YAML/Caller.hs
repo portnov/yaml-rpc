@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Caller where
+module Network.YAML.Caller where
 
 import qualified Data.Map as M
 import Data.Object.Yaml
@@ -9,9 +9,9 @@ import qualified Data.ByteString.Char8 as BS
 import Network
 import System.IO
 
-import YAML
-import YAMLInstances
-import Server
+import Network.YAML.Base
+import Network.YAML.Instances
+import Network.YAML.Server
 
 callDynamic :: (IsYamlObject a, IsYamlObject b) => (BS.ByteString -> IO (BS.ByteString,Int)) -> BS.ByteString -> BS.ByteString -> a -> IO b
 callDynamic getServer service name args = do

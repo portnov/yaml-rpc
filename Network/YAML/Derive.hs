@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, TypeSynonymInstances, MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Derive where
+module Network.YAML.Derive where
 
 import Language.Haskell.TH
 import Control.Monad
@@ -10,8 +10,8 @@ import Data.Object
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 
-import YAML
-import YAMLInstances
+import Network.YAML.Base
+import Network.YAML.Instances
 
 data T1 = T1
 

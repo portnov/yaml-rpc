@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings #-}
 
-module YAMLInstances where
+module Network.YAML.Instances where
   
 import Data.Maybe
 import Data.Default
@@ -8,10 +8,7 @@ import Data.Object
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 
-import YAML
-
-data Point = Point { x :: Double, y :: Double }
-  deriving (Show)
+import Network.YAML.Base
 
 object :: [(BS.ByteString, YamlScalar)] -> YamlObject
 object pairs = Mapping [(toYamlScalar name, Scalar val) | (name,val) <- pairs]
@@ -28,21 +25,6 @@ instance (IsYamlObject a) => ConvertSuccess YamlObject [a] where
   convertSuccess s@(Scalar _) = [cs s]
 
 instance (IsYamlObject a) => IsYamlObject [a] where
-
-instance ConvertSuccess Point YamlObject where
-  convertSuccess (Point x y) = object [("x", toYamlScalar x),
-                                       ("y", toYamlScalar y)]
-
-instance ConvertSuccess YamlObject Point where
-  convertSuccess obj = Point x y
-    where
-      x = fromMaybe 0 $ getScalarAttr "x" obj
-      y = fromMaybe 0 $ getScalarAttr "y" obj
-
-instance Default Point where
-  def = Point 0 0
-
-instance IsYamlObject Point where
 
 instance Default YamlObject where
   def = Sequence []
