@@ -67,14 +67,3 @@ unserialize x =
   in  case d of
         Just y -> Just $ cs y
         Nothing -> Nothing
-
--- p = Point 3.0 2.0
--- 
--- main = do
---   let s = serialize p
---   BS.putStrLn s
---   let c :: YamlObject
---       c = cs p
---       p' :: Point
---       p' = cs c
---   print p'

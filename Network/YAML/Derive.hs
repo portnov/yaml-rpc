@@ -1,6 +1,8 @@
 {-# LANGUAGE TemplateHaskell, TypeSynonymInstances, MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Network.YAML.Derive where
+module Network.YAML.Derive
+  (deriveDefault, deriveIsYamlObject)
+  where
 
 import Language.Haskell.TH
 import Control.Monad
@@ -12,8 +14,6 @@ import qualified Data.ByteString.Char8 as BS
 
 import Network.YAML.Base
 import Network.YAML.Instances
-
-data T1 = T1
 
 mkList :: [Name] -> Q Exp
 mkList []       = [| [] |]
@@ -69,6 +69,7 @@ fromClause (NormalC name fields) = do
     (_,names) <- genPE (length fields)
     genFromClause constructorName names
 
+-- | Derive `instance ConvertSuccess t YamlObject ...'
 deriveToYamlObject :: Name -> Q [Dec]
 deriveToYamlObject t = do
   -- Get list of constructors for type t
@@ -76,12 +77,14 @@ deriveToYamlObject t = do
   convbody <- mapM consClause constructors
   return [InstanceD [] (ConT ''ConvertSuccess `AppT` ConT t `AppT` ConT ''YamlObject) [FunD 'convertSuccess convbody]]
 
+-- | Derive `instance ConvertSuccess YamlObject t ...'
 deriveFromYamlObject :: Name -> Q [Dec]
 deriveFromYamlObject t = do
   TyConI (DataD _ _ _ constructors _)  <-  reify t
   body <- mapM fromClause constructors
   return [InstanceD [] (ConT ''ConvertSuccess `AppT` ConT ''YamlObject `AppT` ConT t) [FunD 'convertSuccess body]]
 
+-- | Derive `instance IsYamlObject t where ...'
 deriveIsYamlObject :: Name -> Q [Dec]
 deriveIsYamlObject t = do
   [i1] <- deriveToYamlObject t
@@ -99,6 +102,7 @@ defaultClause (NormalC name fields) = do
       body = foldl appE (conE name) defs
   clause [] (normalB body) []
 
+-- | Derive `instance Default t where def = ...'
 deriveDefault :: Name -> Q [Dec]
 deriveDefault t = do
   TyConI (DataD _ _ _ constructors _)  <-  reify t

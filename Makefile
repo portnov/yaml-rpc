@@ -7,7 +7,7 @@ TestCall: *.hs Network/YAML/*.hs
 	ghc -i. --make TestCall.hs
 
 clean:
-	find . -name *.hi -delete
-	find . -name *.o -delete
+	find . -name \*.hi -delete
+	find . -name \*.o -delete
 
 

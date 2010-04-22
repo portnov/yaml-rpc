@@ -13,12 +13,12 @@ import Network.YAML.Base
 import Network.YAML.Instances
 import Network.YAML.Server
 
-callDynamic :: (IsYamlObject a, IsYamlObject b) => (BS.ByteString -> IO (BS.ByteString,Int)) -> BS.ByteString -> BS.ByteString -> a -> IO b
-callDynamic getServer service name args = do
-  srv <- getServer service
-  call srv name args
-
-call :: (IsYamlObject a, IsYamlObject b) => (BS.ByteString, Int) -> BS.ByteString -> a -> IO b
+-- | Call remote method
+call :: (IsYamlObject a, IsYamlObject b)
+     => (BS.ByteString, Int)            -- ^ (Host name, port number)
+     -> BS.ByteString                   -- ^ Name of method
+     -> a                               -- ^ Argument for method
+     -> IO b
 call (host,port) name args = withSocketsDo $ do
   h <- connectTo (BS.unpack host) (PortNumber $ fromIntegral port)
   let c = mkCall name (cs args)
@@ -31,3 +31,15 @@ call (host,port) name args = withSocketsDo $ do
   case unserialize text of
     Nothing -> fail "No answer"
     Just x -> return x
+
+-- | Similar, but select server on each call
+callDynamic :: (IsYamlObject a, IsYamlObject b)
+            => (BS.ByteString -> IO (BS.ByteString,Int)) -- ^ Get (Host name, port number) from service name
+            -> BS.ByteString                             -- ^ Name of the service
+            -> BS.ByteString                             -- ^ Name of method
+            -> a                                         -- ^ Argument for method
+            -> IO b
+callDynamic getServer service name args = do
+  srv <- getServer service
+  call srv name args
+

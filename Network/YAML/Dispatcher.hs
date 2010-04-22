@@ -13,9 +13,11 @@ import Network.YAML.Server
 type Worker = YamlObject -> IO YamlObject
 type Rules = M.Map BS.ByteString Worker
 
+-- | Build dispatching rules
 mkRules :: [(BS.ByteString,Worker)] -> Rules
 mkRules pairs = M.fromList pairs
 
+-- | Select worker from dispatching rules
 dispatch :: Rules -> Worker
 dispatch rules = \obj -> 
   let call :: Call
@@ -24,5 +26,6 @@ dispatch rules = \obj ->
       Nothing -> fail $ "Unknown method: " ++ (BS.unpack $ methodName call)
       Just fn -> fn (args call)
 
+-- | Listens given port and dispatches requests
 dispatcher :: Int -> Rules -> IO ()
 dispatcher port rules = server port (dispatch rules)
