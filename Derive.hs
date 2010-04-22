@@ -49,18 +49,25 @@ consClause (RecC name fields) = do
 
 consClause x = report True (show x) >> return undefined
 
-fromClause :: Con -> ClauseQ
-fromClause (RecC name fields) = do
-    let constructorName = nameBase name
-        names = [getNameBase name | (name, _, _) <- fields]
-        pats = map varP names
+genFromClause cName names= do
     obj <- newName "obj"
-    let guard = [| getFirstKey $(varE obj) == (BS.pack constructorName) |]
-        body = foldl appE (conE $ mkName constructorName) $ map (getAttr' constructorName obj) $ map getNameBase names
+    let guard = [| getFirstKey $(varE obj) == (BS.pack cName) |]
+        body = foldl appE (conE $ mkName cName) $ map (getAttr' cName obj) $ map getNameBase names
     clause [varP obj]
         (guardedB [normalGE guard body]) []
   where
     getAttr' c obj n = [| fromMaybe def $ getSubKey (BS.pack c) $(stringOfName n) $(varE obj) |]
+
+fromClause :: Con -> ClauseQ
+fromClause (RecC name fields) = do
+    let constructorName = nameBase name
+        names = [getNameBase name | (name, _, _) <- fields]
+    genFromClause constructorName names
+
+fromClause (NormalC name fields) = do
+    let constructorName = nameBase name
+    (_,names) <- genPE (length fields)
+    genFromClause constructorName names
 
 deriveToYamlObject :: Name -> Q [Dec]
 deriveToYamlObject t = do
@@ -85,7 +92,10 @@ deriveIsYamlObject t = do
 defaultClause :: Con -> ClauseQ
 defaultClause (RecC name fields) = do
   let defs = replicate (length fields) (varE $ mkName "def")
-      names = [getNameBase name | (name, _, _) <- fields]
+      body = foldl appE (conE name) defs
+  clause [] (normalB body) []
+defaultClause (NormalC name fields) = do
+  let defs = replicate (length fields) (varE $ mkName "def")
       body = foldl appE (conE name) defs
   clause [] (normalB body) []
 
