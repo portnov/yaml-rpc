@@ -31,11 +31,20 @@ getList _              = []
 getScalarAttr :: (IsYamlScalar a) => BS.ByteString -> YamlObject -> Maybe a
 getScalarAttr key obj = getScalar =<< getAttr key obj
 
+getSubKey :: (IsYamlScalar a) => BS.ByteString -> BS.ByteString -> YamlObject -> Maybe a
+getSubKey key subkey obj = do
+  attr <- getAttr key obj
+  r <- getAttr subkey attr
+  getScalar r
+
 getListAttr :: BS.ByteString -> YamlObject -> [YamlObject]
 getListAttr key obj = 
   case getAttr key obj of
     Just x -> getList x
     Nothing -> []
+
+getFirstKey :: YamlObject -> BS.ByteString
+getFirstKey (Mapping pairs) = fromYamlScalar $ fst $ head pairs
 
 instance IsYamlScalar Double where
   fromYamlScalar (YamlScalar v _ _) = read $ BS.unpack v
