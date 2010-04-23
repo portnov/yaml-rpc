@@ -8,6 +8,8 @@ import Data.Convertible.Base
 import qualified Data.ByteString.Char8 as BS
 import Network
 import System.IO
+import Control.Monad
+import Control.Concurrent
 
 import Network.YAML.Base
 import Network.YAML.Instances
@@ -42,4 +44,30 @@ callDynamic :: (IsYamlObject a, IsYamlObject b)
 callDynamic getServer service name args = do
   srv <- getServer service
   call srv name args
+
+-- | Call a method and put it's result into MVar
+callF :: (IsYamlObject a, IsYamlObject b)
+      => (BS.ByteString -> IO (BS.ByteString, Int))           -- ^ Get (Host, port) from service name
+      -> BS.ByteString                                        -- ^ Service name
+      -> BS.ByteString                                        -- ^ Method name
+      -> (a, MVar b)                                          -- ^ (Argument, MVar for result)
+      -> IO ()
+callF getServer service name (args, var) = do
+  srv <- getServer service
+  r <- call srv name args
+  putMVar var r
+
+-- | Call a method for each argument in the list in parallel
+-- (it can run method for each argument on another server)
+callP :: (IsYamlObject a, IsYamlObject b)
+      => (BS.ByteString -> IO (BS.ByteString, Int))      -- ^ Get (Host, port) from service name
+      -> BS.ByteString                                   -- ^ Service name
+      -> BS.ByteString                                   -- ^ Method name
+      -> [a]                                             -- ^ List of arguments
+      -> IO [b]
+callP getServer service name args = do
+  let n = length args
+  vars <- replicateM n newEmptyMVar
+  mapM (forkIO . callF getServer service name) $ zip args vars
+  mapM takeMVar vars
 

@@ -13,7 +13,11 @@ import TestTypes
 double :: Point -> IO Point
 double (Point x y) = return $ Point (x*2) (y*2)
 
-rules = mkRules [("double", yamlMethod double)]
+mySum :: [Double] -> IO Double
+mySum = return . sum
+
+rules = mkRules [("double", yamlMethod double),
+                 ("sum",    yamlMethod mySum)]
 
 main = do
   putStrLn "Listening..."
