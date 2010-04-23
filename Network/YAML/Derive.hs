@@ -1,7 +1,8 @@
 {-# LANGUAGE TemplateHaskell, TypeSynonymInstances, MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Network.YAML.Derive
-  (deriveDefault, deriveIsYamlObject)
+  (deriveDefault, deriveIsYamlObject,
+   stringOfName)
   where
 
 import Language.Haskell.TH
