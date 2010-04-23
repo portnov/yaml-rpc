@@ -31,6 +31,25 @@ instance (IsYamlObject a) => ConvertSuccess YamlObject [a] where
 
 instance (IsYamlObject a) => IsYamlObject [a] where
 
+instance (IsYamlObject a, IsYamlObject b) => ConvertSuccess (a,b) YamlObject where
+  convertSuccess (x,y) = Sequence [cs x, cs y]
+
+instance (IsYamlObject a, IsYamlObject b) => ConvertSuccess YamlObject (a,b) where
+  convertSuccess obj = (cs x, cs y) 
+    where
+      tryGet lst k = 
+        if k >= length lst
+          then def
+          else lst !! k
+      list = getList obj
+      x = tryGet list 0
+      y = tryGet list 1
+
+instance (IsYamlObject a, IsYamlObject b) => IsYamlObject (a,b) where
+
+instance (Default a, Default b) => Default (a,b) where
+  def = (def, def)
+
 instance Default YamlObject where
   def = Sequence []
 

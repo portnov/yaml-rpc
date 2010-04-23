@@ -28,5 +28,5 @@ main = do
   print (s :: Double)
   rs <- callP getService "test" "double" ps
   print (rs :: [Point])
-  cs <- callP getService "test" "count" ([3,4,5,6] :: [Int])
+  cs <- callP getService "test" "count" $ zip ([3,4,5,6] :: [Int]) ([1..] :: [Int])
   print (cs :: [Int])

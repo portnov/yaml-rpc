@@ -18,14 +18,14 @@ double (Point x y) = return $ Point (x*2) (y*2)
 mySum :: [Double] -> IO Double
 mySum = return . sum
 
-counter :: Int -> IO Int
-counter k = do
+counter :: (Int,Int) -> IO Int
+counter (k,d) = do
     mapM count [k..k+10]
     return (k+10)
   where
     count i = do
-      print i
-      threadDelay 1000000
+      putStrLn $ show d ++ ": " ++ show i
+      threadDelay (d*100000)
 
 rules = mkRules [("double", yamlMethod double),
                  ("sum",    yamlMethod mySum),
