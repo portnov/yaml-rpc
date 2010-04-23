@@ -10,9 +10,11 @@ import qualified Data.ByteString.Char8 as BS
 
 import Network.YAML.Base
 
+-- | Build YamlObject from (key,value) pairs
 object :: [(BS.ByteString, YamlScalar)] -> YamlObject
 object pairs = Mapping [(toYamlScalar name, Scalar val) | (name,val) <- pairs]
 
+-- | Build YamlObject with single field
 field :: (IsYamlScalar a) => BS.ByteString -> a -> YamlObject
 field name val = Mapping [(toYamlScalar name, Scalar $ toYamlScalar val)]
 
@@ -82,6 +84,7 @@ instance Default Call where
 
 instance IsYamlObject Call where
 
+-- | Convert any (a -> IO b) action to YAML RPC method
 yamlMethod :: (IsYamlObject a, IsYamlObject b) => (a -> IO b) -> YamlObject -> IO YamlObject
 yamlMethod fn = \obj -> do
   let x = cs obj

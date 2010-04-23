@@ -13,6 +13,7 @@ import Data.Object.Yaml
 import Network.YAML.Base
 import Network.YAML.Instances
 
+-- | Run each IO action in separate thread and return all results
 forkA :: [IO a] -> IO [a]
 forkA lst = do
     let n = length lst
@@ -24,7 +25,10 @@ forkA lst = do
       r <- x
       putMVar v r
 
-readHandle :: Handle -> [BS.ByteString] -> IO [BS.ByteString]
+-- | Read lines from Handle
+readHandle :: Handle
+           -> [BS.ByteString]       -- ^ Already read lines
+           -> IO [BS.ByteString]
 readHandle h acc = do
     line <- BS.hGetLine h
     let line' = if BS.null line
@@ -37,9 +41,10 @@ readHandle h acc = do
       then return acc
       else readHandle h (acc ++ [line'])
 
+-- | Start server and wait for connections
 server ::
-      Int
-   -> (YamlObject -> IO YamlObject)
+      Int                              -- ^ Port number
+   -> (YamlObject -> IO YamlObject)    -- ^ Worker
    -> IO ()
 server port callOut = do
 --        installHandler sigPIPE Ignore Nothing    
