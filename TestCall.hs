@@ -1,4 +1,6 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+-- | Test client
+module Main where
 
 import Data.Object.Yaml
 import Data.Convertible.Base
