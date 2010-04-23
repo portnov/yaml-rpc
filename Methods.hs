@@ -1,3 +1,4 @@
+-- | Testing RPC methods are defined here
 module Methods where
 
 import Control.Concurrent

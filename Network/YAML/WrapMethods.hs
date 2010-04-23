@@ -16,6 +16,10 @@ import Network.YAML.Derive
 import Network.YAML.Instances
 import Network.YAML.Dispatcher
 
+-- | Declare given function as remote method. 
+-- This creates a function with same name as given (so qualified name must be
+-- used as argument), and almost same behaivour. Difference is that newly
+-- declared function takes pair (host name, port number) as first argument.
 remote :: Name -> Q [Dec]
 remote name = do
   srv <- newName "srv"
@@ -34,6 +38,9 @@ mkList :: [Exp] -> ExpQ
 mkList [] = [| [] |]
 mkList (e:es) = [| $(return e): $(mkList es) |]
 
+-- | Declare dispatching rules for given list of functions. 
+-- Map with rules will be called dispatchingRules.
+-- For each given function RPC method with same name will be declared.
 declareRules :: [Name] -> Q [Dec]
 declareRules names = do
   pairs <- mapM rulePair names
