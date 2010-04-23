@@ -54,6 +54,7 @@ callF :: (IsYamlObject a, IsYamlObject b)
       -> IO ()
 callF getServer service name (args, var) = do
   srv <- getServer service
+--   putStrLn $ "Calling to " ++ show srv
   r <- call srv name args
   putMVar var r
 

@@ -6,11 +6,15 @@ import Data.Convertible.Base
 import Network.YAML.Base
 import Network.YAML.Instances
 import Network.YAML.Caller
+import Network.YAML.Balancer
 
 import TestTypes
 
-getService "test" = return ("127.0.0.1", 5000)
-getService _ = fail "Unknown service"
+rules = [("test", ("127.0.0.1", 5000), 1),
+         ("test", ("127.0.0.1", 5001), 1),
+         ("test", ("127.0.0.1", 5002), 1)]
+
+getService = selectRandom rules
 
 p = Point 2.0 3.0
 

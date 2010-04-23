@@ -3,10 +3,12 @@
 import Data.Object.Yaml
 import Data.Convertible.Base
 import qualified Data.Map as M
+import Control.Concurrent
 
 import Network.YAML.Dispatcher
 import Network.YAML.Base
 import Network.YAML.Instances
+import Network.YAML.Server (forkA)
 
 import TestTypes
 
@@ -21,5 +23,7 @@ rules = mkRules [("double", yamlMethod double),
 
 main = do
   putStrLn "Listening..."
-  dispatcher 5000 rules
+  forkA [dispatcher 5000 rules,
+         dispatcher 5001 rules,
+         dispatcher 5002 rules]
   return ()

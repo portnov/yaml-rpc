@@ -13,6 +13,17 @@ import Data.Object.Yaml
 import Network.YAML.Base
 import Network.YAML.Instances
 
+forkA :: [IO a] -> IO [a]
+forkA lst = do
+    let n = length lst
+    vars <- replicateM n newEmptyMVar
+    mapM (forkIO . run) $ zip lst vars
+    mapM takeMVar vars
+  where
+    run (x,v) = do
+      r <- x
+      putMVar v r
+
 readHandle :: Handle -> [BS.ByteString] -> IO [BS.ByteString]
 readHandle h acc = do
     line <- BS.hGetLine h
