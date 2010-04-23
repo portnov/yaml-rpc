@@ -70,6 +70,5 @@ unserialize :: IsYamlObject a => BS.ByteString -> Maybe a
 unserialize x =
   let d :: Maybe YamlObject
       d = decode x
-  in  case d of
-        Just y -> Just $ cs y
-        Nothing -> Nothing
+  in  cs `fmap` d
+

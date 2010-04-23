@@ -43,7 +43,7 @@ Build-type:          Simple
 -- Extra-source-files:  
 
 -- Constraint on the version of Cabal needed to build this package.
-Cabal-version:       >=1.2
+Cabal-version:       >=1.4
 
 
 Library
@@ -57,7 +57,7 @@ Library
   
   -- Packages needed in order to build this package.
   Build-depends:       yaml, data-object-yaml, network, template-haskell, bytestring,
-                       data-object, data-default, base, mtl, convertible-text,
+                       data-object, data-default, base >= 3 && <= 5, mtl, convertible-text,
                        containers
   
   -- Modules not exported by this package.

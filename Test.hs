@@ -18,8 +18,18 @@ double (Point x y) = return $ Point (x*2) (y*2)
 mySum :: [Double] -> IO Double
 mySum = return . sum
 
+counter :: Int -> IO Int
+counter k = do
+    mapM count [k..k+10]
+    return (k+10)
+  where
+    count i = do
+      print i
+      threadDelay 1000000
+
 rules = mkRules [("double", yamlMethod double),
-                 ("sum",    yamlMethod mySum)]
+                 ("sum",    yamlMethod mySum),
+                 ("count",  yamlMethod counter)]
 
 main = do
   putStrLn "Listening..."
