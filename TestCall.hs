@@ -14,9 +14,10 @@ import Network.YAML.WrapMethods
 import TestTypes
 import qualified Methods
 
--- declare `double' and `mySum' as RPC methods
+-- declare `double', `mySum' and `ls' as RPC methods
 $(remote 'Methods.double)
 $(remote 'Methods.mySum)
+$(remote 'Methods.ls)
 
 rules = [("test", ("127.0.0.1", 5000), 1),
          ("test", ("127.0.0.1", 5001), 1),
@@ -29,13 +30,15 @@ p = Point 2.0 3.0
 ps = [Point 3.0 5.0, Point 1.0 2.1, Point 0.1 0.2]
 
 main = do
-  srv <- getService "test"
+  test <- getService "test"
 
   -- call remote functions
-  r <- double srv p
+  r <- double test p
   print r
-  s <- mySum srv [3.5, 5.5, 1.0]
+  s <- mySum test [3.5, 5.5, 1.0]
   print s
+  lst <- ls test "/tmp"
+  print lst
 
   -- call remote functions for many arguments, for each argument on different server maybe
   rs <- callP getService "test" "double" ps

@@ -16,7 +16,7 @@ import TestTypes
 import Methods
 
 -- Declare dispatchingRules for given functions
-$(declareRules ['double, 'mySum, 'counter])
+$(declareRules ['double, 'mySum, 'counter, 'ls])
 
 main = do
   putStrLn "Listening..."

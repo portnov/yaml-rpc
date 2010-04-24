@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings, FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, OverloadedStrings, FlexibleInstances, IncoherentInstances #-}
 
 module Network.YAML.Instances where
   
@@ -78,6 +78,14 @@ instance ConvertSuccess BS.ByteString YamlObject where
   convertSuccess x = Scalar $ toYamlScalar x
 
 instance IsYamlObject BS.ByteString where
+
+instance ConvertSuccess YamlObject String where
+  convertSuccess x = fromMaybe def $ getScalar x
+
+instance ConvertSuccess String YamlObject where
+  convertSuccess x = Scalar $ toYamlScalar x
+
+instance IsYamlObject String where
 
 data Call = Call { methodName :: BS.ByteString, args :: YamlObject }
   deriving (Show)

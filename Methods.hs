@@ -1,7 +1,11 @@
 -- | Testing RPC methods are defined here
+-- These functions will be run only in `server' (Test.hs), `client'
+-- (TestCall.hs) uses only their names and types.
 module Methods where
 
 import Control.Concurrent
+import System.Directory
+import Codec.Binary.UTF8.String
 
 import TestTypes
 
@@ -19,4 +23,10 @@ counter (k,d) = do
     count i = do
       putStrLn $ show d ++ ": " ++ show i
       threadDelay (d*100000)
+
+ls :: String -> IO [String]
+ls path = do
+  let path' = encodeString path
+  lst <- getDirectoryContents path'
+  return $ map decodeString lst
 

@@ -62,7 +62,7 @@ server port callOut = do
                 case unserialize text of
                   Nothing -> hClose h
                   Just ob -> do
-                    print ob
+--                     print ob
                     res <- callOut ob
                     BS.hPutStrLn h $ serialize res
                     hClose h)
