@@ -6,11 +6,7 @@ import Data.Object.Yaml
 import Data.Convertible.Base
 import qualified Data.Map as M
 
-import Network.YAML.Dispatcher
-import Network.YAML.Base
-import Network.YAML.Instances
-import Network.YAML.Server (forkA)
-import Network.YAML.WrapMethods
+import Network.YAML
 
 import TestTypes
 import Methods

@@ -5,11 +5,7 @@ module Main where
 import Data.Object.Yaml
 import Data.Convertible.Base
 
-import Network.YAML.Base
-import Network.YAML.Instances
-import Network.YAML.Caller
-import Network.YAML.Balancer
-import Network.YAML.WrapMethods
+import Network.YAML
 
 import TestTypes
 import qualified Methods
@@ -18,6 +14,10 @@ import qualified Methods
 $(remote 'Methods.double)
 $(remote 'Methods.mySum)
 $(remote 'Methods.ls)
+-- For example, `ls' is defined in Methods.hs as
+-- ls :: String -> IO [String]
+-- Now `ls' is defined here as
+-- ls :: (ByteString,Int) -> String -> IO [String]
 
 rules = [("test", ("127.0.0.1", 5000), 1),
          ("test", ("127.0.0.1", 5001), 1),
