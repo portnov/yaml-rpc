@@ -60,6 +60,10 @@ instance IsYamlScalar Int where
   fromYamlScalar (YamlScalar v _ _) = read $ BS.unpack v
   toYamlScalar x = YamlScalar (BS.pack $ show x) NoTag Any
 
+instance IsYamlScalar Integer where
+  fromYamlScalar (YamlScalar v _ _) = read $ BS.unpack v
+  toYamlScalar x = YamlScalar (BS.pack $ show x) NoTag Any
+
 serialize :: IsYamlObject a => a -> BS.ByteString
 serialize x = 
   let c :: YamlObject

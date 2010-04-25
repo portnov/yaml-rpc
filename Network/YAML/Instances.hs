@@ -71,6 +71,14 @@ instance ConvertSuccess Int YamlObject where
 
 instance IsYamlObject Int where
 
+instance ConvertSuccess YamlObject Integer where
+  convertSuccess x = fromMaybe def $ getScalar x
+
+instance ConvertSuccess Integer YamlObject where
+  convertSuccess x = Scalar $ toYamlScalar x
+
+instance IsYamlObject Integer where
+
 instance ConvertSuccess YamlObject BS.ByteString where
   convertSuccess x = fromMaybe def $ getScalar x
 
