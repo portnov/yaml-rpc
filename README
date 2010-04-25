@@ -1,0 +1,20 @@
+YAML-RPC README
+===============
+Ilya V. Portnov <portnov84@rambler.ru>
+
+The yaml-rpc package contains a small library to organize remote procedure call
+(RPC) over TCP/IP network, using YAML as data serialization format.
+
+RPC server should supply a set of "RPC methods", which are simply functions ::
+a -> IO b, `a' and 'b' should be of class IsYamlObject. This class guarantees
+that values of given type can be serialized to YAML and de-serialized.
+Network.YAML.Instances module provides some instances declaration for this
+typeclass. Moreover, Network.YAML.Derive module contains (TemplateHaskell)
+function deriveIsYamlObject, which will help you to declare `instance
+IsYamlObject ...' for almost any ADT.
+
+You can see examples of usage in files Test.hs and TestCall.hs. Haddock
+documentation is here: http://iportnov.ru/files/yaml-rpc/html/index.html.
+
+Depends: ghc >= 6.10, network, data-object, data-object-yaml, yaml,
+data-default, convertible-text.
