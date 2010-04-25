@@ -15,21 +15,29 @@ import Network.YAML.Base
 import Network.YAML.Instances
 import Network.YAML.Server
 
+-- | Send any YAML text and return an answer
+sendYAML :: (BS.ByteString, Int)      -- ^ (Hostname, port)
+         -> BS.ByteString             -- ^ YAML text
+         -> IO BS.ByteString          -- ^ Answer
+sendYAML (host,port) yaml =  withSocketsDo $ do
+  h <- connectTo (BS.unpack host) (PortNumber $ fromIntegral port)
+  hSetBuffering h NoBuffering
+  BS.hPutStrLn h yaml
+  lns <- readHandle h []
+  hClose h
+  let text = BS.unlines lns
+  return text
+
 -- | Call remote method
 call :: (IsYamlObject a, IsYamlObject b)
      => (BS.ByteString, Int)            -- ^ (Host name, port number)
      -> BS.ByteString                   -- ^ Name of method
      -> a                               -- ^ Argument for method
      -> IO b
-call (host,port) name args = withSocketsDo $ do
-  h <- connectTo (BS.unpack host) (PortNumber $ fromIntegral port)
+call (host,port) name args = do
   let c = mkCall name (cs args)
       s = serialize c
-  hSetBuffering h NoBuffering
-  BS.hPutStrLn h s
-  lns <- readHandle h []
-  hClose h
-  let text = BS.unlines lns
+  text <- sendYAML (host,port) s
   case unserialize text of
     Nothing -> fail "No answer"
     Just x -> return x
