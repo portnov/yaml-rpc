@@ -53,12 +53,15 @@ Library
                        Network.YAML.Caller,
                        Network.YAML.Dispatcher,
                        Network.YAML.Instances,
-                       Network.YAML.Base
+                       Network.YAML.Base,
+                       Network.YAML.WrapMethods,
+                       Network.YAML.Balancer,
+                       Network.YAML
   
   -- Packages needed in order to build this package.
   Build-depends:       yaml, data-object-yaml, network, template-haskell, bytestring,
                        data-object, data-default, base >= 3 && <= 5, mtl, convertible-text,
-                       containers
+                       containers, random
   
   -- Modules not exported by this package.
   -- Other-modules:       
