@@ -13,6 +13,14 @@ typeclass. Moreover, Network.YAML.Derive module contains (TemplateHaskell)
 function deriveIsYamlObject, which will help you to declare `instance
 IsYamlObject ...' for almost any ADT.
 
+RPC-client calls RPC-methods usually using one of two ways. First is to use
+`call' (or `callDynamic') function from Network.YAML.Caller module. One need to
+give method name as it's parameter. Second way is to use (TemplateHaskell-)
+function `remote' from Network.YAML.WrapMethods module to declare wrapper
+functions for RPC-methods. These wrappers will have same names as source
+functions, and almost same behaivour. Single difference is that wrappers
+require pair: (RPC-server host name, port number) as their first argument.
+
 You can see examples of usage in files Test.hs and TestCall.hs. Haddock
 documentation is here: http://iportnov.ru/files/yaml-rpc/html/index.html.
 
