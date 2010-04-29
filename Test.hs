@@ -11,8 +11,11 @@ import Network.YAML
 import TestTypes
 import Methods
 
+st :: State
+st = "test"
+
 -- Declare dispatchingRules for given functions
-$(declareRules ['double, 'mySum, 'counter, 'ls])
+$(declareRulesWithArg 'st ['double, 'mySum, 'counter, 'ls])
 
 main = do
   putStrLn "Listening..."

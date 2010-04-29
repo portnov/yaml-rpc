@@ -9,14 +9,16 @@ import Codec.Binary.UTF8.String
 
 import TestTypes
 
-double :: Point -> IO Point
-double (Point x y) = return $ Point (x*2) (y*2)
+double :: State -> Point -> IO Point
+double s (Point x y) = do
+  print s
+  return $ Point (x*2) (y*2)
 
-mySum :: [Double] -> IO Double
-mySum = return . sum
+mySum :: State -> [Double] -> IO Double
+mySum s lst = return $ sum lst
 
-counter :: (Int,Int) -> IO Int
-counter (k,d) = do
+counter :: State -> (Int,Int) -> IO Int
+counter s (k,d) = do
     mapM count [k..k+10]
     return (k+10)
   where
@@ -24,8 +26,8 @@ counter (k,d) = do
       putStrLn $ show d ++ ": " ++ show i
       threadDelay (d*100000)
 
-ls :: String -> IO [String]
-ls path = do
+ls :: State -> String -> IO [String]
+ls s path = do
   let path' = encodeString path
   lst <- getDirectoryContents path'
   return $ map decodeString lst
