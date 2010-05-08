@@ -67,6 +67,30 @@ instance (Default a, Default b) => Default (a,b) where
 instance (Default a, Default b, Default c) => Default (a,b,c) where
   def = (def, def, def)
 
+_right :: BS.ByteString
+_right = "Right"
+
+_left :: BS.ByteString
+_left = "Left"
+
+instance (IsYamlObject a, IsYamlObject b) => ConvertSuccess (Either a b) YamlObject where
+  convertSuccess (Right a) = Mapping [(toYamlScalar _right, cs a)]
+  convertSuccess (Left b) = Mapping [(toYamlScalar _left, cs b)]
+
+instance (IsYamlObject a, IsYamlObject b) => ConvertSuccess YamlObject (Either a b) where
+  convertSuccess (Mapping [(name, val)]) = 
+    if fromYamlScalar name == _right 
+      then Right (cs val)
+      else if fromYamlScalar name == _left
+             then Left (cs val)
+             else def
+  convertSuccess _ = def
+
+instance (Default a) => Default (Either a b) where
+  def = Left def
+
+instance (IsYamlObject a, IsYamlObject b) => IsYamlObject (Either a b) where
+
 instance Default YamlObject where
   def = Sequence []
 
