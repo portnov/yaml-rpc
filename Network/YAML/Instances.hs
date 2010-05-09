@@ -120,6 +120,26 @@ instance ConvertSuccess Integer YamlObject where
 
 instance IsYamlObject Integer where
 
+instance IsYamlScalar Bool where
+  toYamlScalar True = stringScalar "True"
+  toYamlScalar False = stringScalar "False"
+
+  fromYamlScalar x = 
+    case fromYamlScalar x :: String of
+      "True" -> True
+      _      -> False
+
+instance Default Bool where
+  def = False
+
+instance ConvertSuccess Bool YamlObject where
+  convertSuccess x = Scalar $ toYamlScalar x
+
+instance ConvertSuccess YamlObject Bool where
+  convertSuccess x = fromMaybe def $ getScalar x
+
+instance IsYamlObject Bool where
+
 instance ConvertSuccess YamlObject BS.ByteString where
   convertSuccess x = fromMaybe def $ getScalar x
 
