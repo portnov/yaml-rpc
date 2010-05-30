@@ -31,6 +31,9 @@ remote name = do
     sigD cName [t| (Connection c) => c -> $(return a) -> $(return ioB) |],
     funD cName [c]]
 
+-- | Similar to remote, but use it when basic function accepts additional argument,
+-- which should not be passed from client.
+-- (To be used in pair with declareRulesWithArg).
 remote' :: Name -> Q [Dec]
 remote' name = do
   srv <- newName "srv"

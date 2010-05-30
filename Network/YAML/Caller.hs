@@ -18,7 +18,7 @@ import Network.YAML.Server
 class Connection c where
   newConnection :: (BS.ByteString, Int) -> IO c
   closeConnection :: c -> IO ()
--- | Call remote method
+  -- | Call remote method
   call :: (IsYamlObject a, IsYamlObject b)
        => c
        -> BS.ByteString                   -- ^ Name of method
@@ -84,7 +84,7 @@ instance Connection PersistentConnection where
       Nothing -> fail "No answer"
       Just x -> return x
 
--- | Similar, but select server on each call
+-- | Similar to call, but select server on each call
 callDynamic :: (IsYamlObject a, IsYamlObject b)
             => (BS.ByteString -> IO (BS.ByteString,Int)) -- ^ Get (Host name, port number) from service name
             -> BS.ByteString                             -- ^ Name of the service

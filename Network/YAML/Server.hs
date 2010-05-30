@@ -46,7 +46,9 @@ readHandle h acc = do
         then return acc
         else readHandle h (acc ++ [line'])
 
--- | Start server and wait for connections
+-- | Start server and wait for connections.
+-- This server closes connection after each query.
+-- So, each call is processed in another thread.
 server ::
       Int                              -- ^ Port number
    -> (YamlObject -> IO YamlObject)    -- ^ Worker
@@ -72,6 +74,9 @@ server port callOut = do
                     BS.hPutStrLn h $ serialize res
                     hClose h)
 
+-- | Start server and wait for connections.
+-- This server does not close connection after query.
+-- So, new thread is created only per-client, not per-query.
 persistentServer :: 
       Int 
    -> (YamlObject -> IO YamlObject)
