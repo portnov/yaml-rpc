@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 
 module Network.YAML.Server where
 
@@ -30,16 +31,20 @@ readHandle :: Handle
            -> [BS.ByteString]       -- ^ Already read lines
            -> IO [BS.ByteString]
 readHandle h acc = do
-    line <- BS.hGetLine h
-    let line' = if BS.null line
-                  then line
-                  else if (BS.last line)=='\r'
-                          then BS.init line
-                          else line
---           print $ "read line:"++line'
-    if BS.null line'
-      then return acc
-      else readHandle h (acc ++ [line'])
+  eof <- hIsEOF h
+  if eof
+    then return acc
+    else do
+      line <- BS.hGetLine h
+      let line' = if BS.null line
+                    then line
+                    else if (BS.last line)=='\r'
+                            then BS.init line
+                            else line
+  --           print $ "read line:"++line'
+      if BS.null line'
+        then return acc
+        else readHandle h (acc ++ [line'])
 
 -- | Start server and wait for connections
 server ::
@@ -66,4 +71,35 @@ server port callOut = do
                     res <- callOut ob
                     BS.hPutStrLn h $ serialize res
                     hClose h)
+
+persistentServer :: 
+      Int 
+   -> (YamlObject -> IO YamlObject)
+   -> IO ()
+persistentServer port callOut = do
+--        installHandler sigPIPE Ignore Nothing    
+      sock  <- listenOn (PortNumber $ fromIntegral port)
+      (forever $ loop sock) `finally` sClose sock
+  where
+    loop :: Socket -> IO ThreadId
+    loop sock =
+         do (h,_nm,_port) <- accept sock
+            forkIO (worker h)
+
+    worker :: Handle -> IO ()
+    worker h = do 
+      hSetBuffering h NoBuffering
+      lns <- readHandle h []
+      let text = BS.unlines lns
+      if BS.null text
+        then hClose h
+        else
+          case unserialize text of
+            Nothing -> hClose h
+            Just ob -> do
+              res <- callOut ob
+              BS.hPutStrLn h $ serialize res
+              if getScalarAttr "connection" ob == Just ("close" :: BS.ByteString)
+                then hClose h
+                else worker h
 

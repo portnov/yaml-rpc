@@ -1,10 +1,11 @@
+GHC=ghc -i. --make 
 all: Test TestCall
 
 Test: *.hs Network/YAML/*.hs
-	ghc -i. --make Test.hs
+	$(GHC) Test.hs
 
 TestCall: *.hs Network/YAML/*.hs
-	ghc -i. --make TestCall.hs
+	$(GHC) TestCall.hs
 
 clean:
 	find . -name \*.hi -delete

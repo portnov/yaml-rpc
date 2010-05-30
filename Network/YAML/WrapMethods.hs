@@ -28,7 +28,7 @@ remote name = do
   (VarI _ tp _ _) <- reify name
   let AppT (AppT ArrowT a) ioB = tp
   sequence [
-    sigD cName [t| (BS.ByteString, Int) -> $(return a) -> $(return ioB) |],
+    sigD cName [t| (Connection c) => c -> $(return a) -> $(return ioB) |],
     funD cName [c]]
 
 remote' :: Name -> Q [Dec]
@@ -39,7 +39,7 @@ remote' name = do
   (VarI _ tp _ _) <- reify name
   let AppT (AppT ArrowT _) (AppT (AppT ArrowT a) ioB) = tp
   sequence [
-    sigD cName [t| (BS.ByteString, Int) -> $(return a) -> $(return ioB) |],
+    sigD cName [t| (Connection c) => c -> $(return a) -> $(return ioB) |],
     funD cName [c]]
 
 rulePair :: Name -> ExpQ

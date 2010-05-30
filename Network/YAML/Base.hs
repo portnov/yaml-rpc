@@ -10,6 +10,8 @@ import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 import Text.Libyaml hiding (encode, decode)
 
+type HostAndPort = (BS.ByteString, Int)
+
 class (ConvertSuccess YamlObject a, ConvertSuccess a YamlObject, Default a) => IsYamlObject a where
 
 getAttr :: BS.ByteString -> YamlObject -> Maybe YamlObject

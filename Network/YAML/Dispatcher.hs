@@ -29,3 +29,6 @@ dispatch rules = \obj ->
 -- | Listens given port and dispatches requests
 dispatcher :: Int -> Rules -> IO ()
 dispatcher port rules = server port (dispatch rules)
+
+persistentDispatcher :: Int -> Rules -> IO ()
+persistentDispatcher port rules = persistentServer port (dispatch rules)
