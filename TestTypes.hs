@@ -9,8 +9,6 @@ import Network.YAML.Derive
 data Point = Point { x :: Double, y :: Double }
   deriving (Show)
 
-type State = String
-
 -- instance Default Point ...
 $(deriveDefault ''Point)
 
