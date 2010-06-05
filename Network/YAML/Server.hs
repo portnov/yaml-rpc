@@ -11,6 +11,7 @@ import System.IO
 import qualified Data.ByteString.Char8 as BS
 import Data.Object.Yaml
 
+import Network.YAML.Types
 import Network.YAML.Base
 import Network.YAML.Instances
 
@@ -51,7 +52,7 @@ readHandle h acc = do
 -- So, each call is processed in another thread.
 server ::
       Int                              -- ^ Port number
-   -> (YamlObject -> IO YamlObject)    -- ^ Worker
+   -> Worker
    -> IO ()
 server port callOut = do
 --        installHandler sigPIPE Ignore Nothing    
@@ -79,7 +80,7 @@ server port callOut = do
 -- So, new thread is created only per-client, not per-query.
 persistentServer :: 
       Int 
-   -> (YamlObject -> IO YamlObject)
+   -> Worker
    -> IO ()
 persistentServer port callOut = do
 --        installHandler sigPIPE Ignore Nothing    

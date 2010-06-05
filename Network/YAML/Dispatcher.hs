@@ -5,15 +5,12 @@ import qualified Data.Map as M
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 
-import Network.YAML.Base
+import Network.YAML.Types
 import Network.YAML.Instances
 import Network.YAML.Server
 
-type Worker = YamlObject -> IO YamlObject
-type Rules = M.Map BS.ByteString Worker
-
 -- | Build dispatching rules
-mkRules :: [(BS.ByteString,Worker)] -> Rules
+mkRules :: [(BS.ByteString, Worker)] -> Rules
 mkRules pairs = M.fromList pairs
 
 -- | Select worker from dispatching rules

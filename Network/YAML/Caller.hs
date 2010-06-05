@@ -1,6 +1,11 @@
 {-# LANGUAGE OverloadedStrings, FlexibleInstances, TypeSynonymInstances #-}
 
-module Network.YAML.Caller where
+module Network.YAML.Caller
+  (callDynamic,
+   callF,
+   callP
+  )
+  where
 
 import qualified Data.Map as M
 import Data.Object.Yaml
@@ -10,19 +15,10 @@ import System.IO
 import Control.Monad
 import Control.Concurrent
 
-import Network.YAML.Base
+import Network.YAML.Types
+import Network.YAML.Base (serialize, unserialize)
 import Network.YAML.Instances
 import Network.YAML.Server
-
-class Connection c where
-  newConnection :: (BS.ByteString, Int) -> IO c
-  closeConnection :: c -> IO ()
-  -- | Call remote method
-  call :: (IsYamlObject a, IsYamlObject b)
-       => c
-       -> BS.ByteString                   -- ^ Name of method
-       -> a                               -- ^ Argument for method
-       -> IO b
 
 -- | Send any YAML text and return an answer
 sendYAML :: (BS.ByteString, Int)      -- ^ (Hostname, port)
@@ -65,8 +61,6 @@ instance Connection HostAndPort where
 
   newConnection pair = return pair
   closeConnection _ = return ()
-
-newtype PersistentConnection = PC Handle
 
 instance Connection PersistentConnection where
   newConnection (host, port) = do

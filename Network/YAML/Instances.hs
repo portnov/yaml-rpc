@@ -8,6 +8,7 @@ import Data.Object
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 
+import Network.YAML.Types
 import Network.YAML.Base
 
 -- | Build YamlObject from (key,value) pairs
@@ -121,9 +122,6 @@ instance IsYamlObject BS.ByteString where
 instance IsYamlObject String where
   fromYaml x = fromMaybe def $ getScalar x
   toYaml x = Scalar $ toYamlScalar x
-
-data Call = Call { methodName :: BS.ByteString, args :: YamlObject }
-  deriving (Show)
 
 mkCall :: BS.ByteString -> YamlObject -> YamlObject
 mkCall name args = toYaml $ Call name args

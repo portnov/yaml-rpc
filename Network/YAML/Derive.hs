@@ -13,6 +13,7 @@ import Data.Object
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 
+import Network.YAML.Types
 import Network.YAML.Base
 
 mkList :: [Name] -> ExpQ

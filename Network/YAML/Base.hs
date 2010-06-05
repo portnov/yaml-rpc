@@ -10,11 +10,7 @@ import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 import Text.Libyaml hiding (encode, decode)
 
-type HostAndPort = (BS.ByteString, Int)
-
-class (Default a) => IsYamlObject a where
-  toYaml :: a -> YamlObject
-  fromYaml :: YamlObject -> a
+import Network.YAML.Types
 
 getAttr :: BS.ByteString -> YamlObject -> Maybe YamlObject
 getAttr key (Mapping pairs) = lookup (toYamlScalar key) pairs

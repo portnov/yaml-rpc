@@ -10,7 +10,7 @@ import Data.Char (toUpper)
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 
-import Network.YAML.Base
+import Network.YAML.Types
 import Network.YAML.Caller
 import Network.YAML.Derive
 import Network.YAML.Instances

@@ -4,7 +4,7 @@ module Network.YAML.Balancer where
 import System.Random
 import qualified Data.ByteString.Char8 as BS
 
-import Network.YAML.Base (HostAndPort)
+import Network.YAML.Types
 
 -- | Select random server
 selectRandom :: [(BS.ByteString, HostAndPort, Int)]   -- ^ [(Service name, (hostname, port number), priority)]
