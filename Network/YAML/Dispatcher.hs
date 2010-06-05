@@ -26,5 +26,6 @@ dispatch rules = \obj ->
 dispatcher :: Int -> Rules -> IO ()
 dispatcher port rules = server port (dispatch rules)
 
+-- | Similar, but use persistent server.
 persistentDispatcher :: Int -> Rules -> IO ()
 persistentDispatcher port rules = persistentServer port (dispatch rules)

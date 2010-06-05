@@ -21,8 +21,52 @@ functions for RPC-methods. These wrappers will have same names as source
 functions, and almost same behaivour. Single difference is that wrappers
 require pair: (RPC-server host name, port number) as their first argument.
 
+Two modes of communication are supported. In first mode, client and server act
+as following:
+
+  Client:
+    - opens socket to server
+    - writes query to socket
+    - waits for answer and reads it
+    - closes socket
+    - for next query, opens socket again etc.
+  Server:
+    - listens on socket
+    - on connection (in the separate thread):
+      - reads a query
+      - computes answer
+      - writes answer to socket
+      - closes socket.
+
+So, first mode is `one connection per query' mode. It's designed for situations
+when network connection between clients and servers is pretty good, and many
+machines runs same server code. So, this mode of RPC can be used in parallel
+load-balancing clusters.
+
+In second mode, client and server act as following:
+
+  Client:
+    - opens socket to server
+    - writers query to socket
+    - waits for answer and reads it
+    - writes next query
+    - reads next answer
+    - etc
+    - closes socket
+  Server:
+    - listens on socket
+    - on connection (in separate thread):
+      - reads a query
+      - writes answer to socket
+      - reads next query
+      - etc
+
+So, second mode is `one connection for series of queries', or 'persistent
+connection' mode. It's designed for situations when opening a socket takes much
+time — for example, when connection between client and server is not so good.
+
 You can see examples of usage in files Test.hs and TestCall.hs. Haddock
 documentation is here: http://iportnov.ru/files/yaml-rpc/html/index.html.
 
 Depends: ghc >= 6.10, network, data-object, data-object-yaml, yaml,
-data-default, convertible-text.
+data-default.
