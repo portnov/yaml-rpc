@@ -12,7 +12,9 @@ import Text.Libyaml hiding (encode, decode)
 
 type HostAndPort = (BS.ByteString, Int)
 
-class (ConvertSuccess YamlObject a, ConvertSuccess a YamlObject, Default a) => IsYamlObject a where
+class (Default a) => IsYamlObject a where
+  toYaml :: a -> YamlObject
+  fromYaml :: YamlObject -> a
 
 getAttr :: BS.ByteString -> YamlObject -> Maybe YamlObject
 getAttr key (Mapping pairs) = lookup (toYamlScalar key) pairs
@@ -69,12 +71,12 @@ instance IsYamlScalar Integer where
 serialize :: IsYamlObject a => a -> BS.ByteString
 serialize x = 
   let c :: YamlObject
-      c = cs x
+      c = toYaml x
   in  encode c
 
 unserialize :: IsYamlObject a => BS.ByteString -> Maybe a
 unserialize x =
   let d :: Maybe YamlObject
       d = decode x
-  in  cs `fmap` d
+  in  fromYaml `fmap` d
 

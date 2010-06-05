@@ -3,7 +3,6 @@
 module Main where
 
 import Data.Object.Yaml
-import Data.Convertible.Base
 import qualified Data.Map as M
 
 import Network.YAML

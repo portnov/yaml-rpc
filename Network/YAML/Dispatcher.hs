@@ -3,7 +3,6 @@ module Network.YAML.Dispatcher where
 
 import qualified Data.Map as M
 import Data.Object.Yaml
-import Data.Convertible.Base
 import qualified Data.ByteString.Char8 as BS
 
 import Network.YAML.Base
@@ -21,7 +20,7 @@ mkRules pairs = M.fromList pairs
 dispatch :: Rules -> Worker
 dispatch rules = \obj -> 
   let call :: Call
-      call = cs obj
+      call = fromYaml obj
   in case M.lookup (methodName call) rules of
       Nothing -> fail $ "Unknown method: " ++ (BS.unpack $ methodName call)
       Just fn -> fn (args call)

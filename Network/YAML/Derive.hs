@@ -21,7 +21,7 @@ mkList (v:vars) = [| (toYamlScalar $(stringOfName v), Scalar $ toYamlScalar $(va
 
 mkSeq :: [Name] -> ExpQ
 mkSeq []       = [| [] |]
-mkSeq (v:vars) = [| cs $(varE v): $(mkSeq vars) |]
+mkSeq (v:vars) = [| toYaml $(varE v): $(mkSeq vars) |]
 
 getNameBase :: Name -> Name
 getNameBase name = mkName $ nameBase name
@@ -75,32 +75,30 @@ fromClause (NormalC name fields) = do
         body = foldl appE (conE $ mkName cName) $ map (getAttr' cName obj) $ map fst (zip [0..] names)
     clause [varP obj] (guardedB [normalGE guard body]) []
   where
-    getAttr' c obj k = [| cs $ getItem (BS.pack c) k $(varE obj) |]
+    getAttr' c obj k = [| fromYaml $ getItem (BS.pack c) k $(varE obj) |]
     getName (n,x) = (n, getNameBase x)
     
 
--- | Derive `instance ConvertSuccess t YamlObject ...'
 deriveToYamlObject :: Name -> Q [Dec]
 deriveToYamlObject t = do
   -- Get list of constructors for type t
   TyConI (DataD _ _ _ constructors _)  <-  reify t
   convbody <- mapM consClause constructors
-  return [InstanceD [] (ConT ''ConvertSuccess `AppT` ConT t `AppT` ConT ''YamlObject) [FunD 'convertSuccess convbody]]
+  return [FunD 'toYaml convbody]
 
--- | Derive `instance ConvertSuccess YamlObject t ...'
 deriveFromYamlObject :: Name -> Q [Dec]
 deriveFromYamlObject t = do
   TyConI (DataD _ _ _ constructors _)  <-  reify t
   body <- mapM fromClause constructors
-  return [InstanceD [] (ConT ''ConvertSuccess `AppT` ConT ''YamlObject `AppT` ConT t) [FunD 'convertSuccess body]]
+  return [FunD 'fromYaml body]
 
 -- | Derive `instance IsYamlObject t where ...'
 deriveIsYamlObject :: Name -> Q [Dec]
 deriveIsYamlObject t = do
   [i1] <- deriveToYamlObject t
   [i2] <- deriveFromYamlObject t
-  let i3 = InstanceD [] (ConT ''IsYamlObject `AppT` ConT t) []
-  return [i1,i2,i3]
+  let res = InstanceD [] (ConT ''IsYamlObject `AppT` ConT t) [i1, i2]
+  return [res]
 
 defaultClause :: Con -> ClauseQ
 defaultClause (RecC name fields) = do

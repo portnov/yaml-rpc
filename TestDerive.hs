@@ -2,7 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.Default
-import Data.Convertible.Base
 import Data.Object.Yaml
 import qualified Data.ByteString.Char8 as BS
 

@@ -57,7 +57,7 @@ Library
   
   -- Packages needed in order to build this package.
   Build-depends:       yaml, data-object-yaml, network, template-haskell, bytestring,
-                       data-object, data-default, base >= 3 && <= 5, mtl, convertible-text,
+                       data-object, data-default, base >= 3 && <= 5, mtl, 
                        containers, random
   
   -- Modules not exported by this package.

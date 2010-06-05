@@ -4,7 +4,6 @@ module Network.YAML.Caller where
 
 import qualified Data.Map as M
 import Data.Object.Yaml
-import Data.Convertible.Base
 import qualified Data.ByteString.Char8 as BS
 import Network
 import System.IO
@@ -57,7 +56,7 @@ instance Connection HostAndPort where
 --        -> a                               -- ^ Argument for method
 --        -> IO b
   call (host,port) name args = do
-    let c = mkCall name (cs args)
+    let c = mkCall name (toYaml args)
         s = serialize c
     text <- sendYAML (host,port) s
     case unserialize text of
@@ -77,7 +76,7 @@ instance Connection PersistentConnection where
   closeConnection (PC h) = hClose h
 
   call (PC h) name args = do
-    let c = mkCall name (cs args)
+    let c = mkCall name (toYaml args)
         s = serialize c
     text <- hSendYAML h s
     case unserialize text of

@@ -6,7 +6,6 @@ import Control.Monad
 import System.Environment (getArgs)
 import qualified Data.ByteString.Char8 as BS
 import Data.Object.Yaml
-import Data.Convertible.Base
 
 import Network.YAML
 
