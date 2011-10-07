@@ -53,12 +53,6 @@ instance (IsYamlObject a, IsYamlObject b, IsYamlObject c) => IsYamlObject (a,b,c
       y = tryGet list 1
       z = tryGet list 2
 
-instance (Default a, Default b) => Default (a,b) where
-  def = (def, def)
-
-instance (Default a, Default b, Default c) => Default (a,b,c) where
-  def = (def, def, def)
-
 _right :: BS.ByteString
 _right = "Right"
 
