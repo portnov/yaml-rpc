@@ -10,8 +10,8 @@ data Point = Point { x :: Double, y :: Double }
   deriving (Show)
 
 -- instance Default Point ...
-$(deriveDefault ''Point)
+deriveDefault ''Point
 
 -- instance IsYamlObject Point ...
-$(deriveIsYamlObject ''Point)
+deriveIsYamlObject ''Point
 

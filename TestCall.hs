@@ -13,9 +13,10 @@ import TestTypes
 import qualified Methods
 
 -- declare `double', `mySum' and `ls' as RPC methods
-$(remote 'Methods.double)
-$(remote 'Methods.mySum)
-$(remote 'Methods.ls)
+remote 'Methods.double
+remote 'Methods.mySum
+remote 'Methods.ls
+
 -- For example, `ls' is defined in Methods.hs as
 -- ls :: String -> IO [String]
 -- Now `ls' is defined here as
