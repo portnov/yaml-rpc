@@ -1,0 +1,10 @@
+uri: http://home.iportnov.ru/test.api
+types:
+  User:
+    login: Text
+    fullName: Text
+methods:
+  sayHello:
+    arg0: User
+    return: Text
+
