@@ -68,7 +68,10 @@ Library
                        scotty >= 0.8.0
   
   -- Modules not exported by this package.
-  Other-modules:       TestGen, TestAPI, TestAPIImpl, TestScotty
+  Other-modules:       Test.Client,
+                       Test.TestAPI,
+                       Test.TestAPIImpl,
+                       Test.Server
   
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   -- Build-tools:         

@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 
-module TestAPI where
+module Test.TestAPI where
 
 import Data.Maybe
 import qualified Data.Map as M

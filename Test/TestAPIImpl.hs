@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, DeriveGeneric, StandaloneDeriving #-}
 
-module TestAPIImpl where
+module Test.TestAPIImpl where
 
 import GHC.Generics
 import qualified Data.Text as T

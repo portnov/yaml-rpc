@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, PatternGuards #-}
 
-module Network.YAML.TH.Client (generateAPI) where
+module Network.YAML.TH.Client (generateAPI, useAPI) where
 
 import Control.Monad
 import qualified Data.Map as M
@@ -8,10 +8,18 @@ import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
 import Language.Haskell.TH.Lift
 import qualified Data.Text as T
-import Data.Aeson
+import qualified Data.ByteString.Lazy as B
+import Data.Yaml
 
 import qualified Network.YAML.API as API
 import Network.YAML.Caller
+
+useAPI :: FilePath -> Q [Dec]
+useAPI path = do
+  x <- runIO $ decodeFileEither path
+  case x of
+    Left err -> fail $ "Cannot parse API description file " ++ path ++ ": " ++ show err
+    Right api -> generateAPI api
 
 generateAPI :: API.API -> Q [Dec]
 generateAPI (API.API _ types methods) = do

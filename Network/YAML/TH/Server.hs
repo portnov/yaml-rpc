@@ -115,3 +115,4 @@ writeAPI path uri typeNames methodNames = do
               API.apiMethods = methodsMap }
   runIO $ B.writeFile path $ encode api
   return []
+

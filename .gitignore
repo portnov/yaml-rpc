@@ -2,7 +2,6 @@
 *.o
 *.swp
 .cabal-sandbox/
-Test
 TestCall
 cabal.sandbox.config
 dist/

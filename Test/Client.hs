@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, DeriveGeneric, StandaloneDeriving #-}
 
-module TestGen where
+module Test.Client where
 
 import GHC.Generics
 import Data.Maybe
@@ -13,11 +13,17 @@ import Network.YAML.API
 import qualified Network.YAML.TH.Client as C
 import Network.YAML.TH.Dispatcher
 
-import qualified TestAPI as Test
+import qualified Test.TestAPI as Test
 
-$(C.generateAPI Test.testApi)
+$(C.useAPI "test.api")
 
 deriving instance Generic User
 instance FromJSON User
 instance ToJSON User
+
+main :: IO ()
+main = do
+  let url = "http://localhost:3000" :: String
+  result <- sayHello url $ User {fullName = "Ivan Ivanov", login = "ivan"}
+  print result
 
