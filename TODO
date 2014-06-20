@@ -1,0 +1,4 @@
+* Many-argument methods support
+* Support more types
+  * Support lists  [User]
+  * Support tuples  (Text, Text)
