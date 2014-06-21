@@ -6,5 +6,6 @@ TestCall
 cabal.sandbox.config
 dist/
 html/
-yaml
+yaml-rpc/scotty/dist/
+yaml-rpc/scotty/cabal.sandbox.config
 

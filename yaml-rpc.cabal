@@ -10,7 +10,7 @@ Description:         This library aimed to organize remote procedure call (RPC)
                      over TCP/IP network, using YAML as data serialization format.
 
 -- URL for the project homepage or repository.
-Homepage:            http://iportnov.ru/en/projects/yaml-rpc-0/
+Homepage:            http://redmine.iportnov.ru/projects/yaml-rpc
 
 -- The license under which the package is released.
 License:             LGPL-3
@@ -34,10 +34,10 @@ Build-type:          Simple
 
 -- Extra files to be distributed with the package, such as examples or
 -- a README.
-Extra-source-files:  README Test.hs TestCall.hs
+Extra-source-files:  README
 
 -- Constraint on the version of Cabal needed to build this package.
-Cabal-version:       >=1.4
+Cabal-version:       >= 1.8
 
 
 Library
@@ -47,7 +47,6 @@ Library
                        Network.YAML.TH.Server,
                        Network.YAML.TH.Client,
                        Network.YAML.TH.Dispatcher,
-                       Network.YAML.Scotty
                        Network.YAML
   
   -- Packages needed in order to build this package.
@@ -65,14 +64,11 @@ Library
                        wreq,
                        http-types >= 0.8.5,
                        http-client >= 0.3.3.1,
-                       lens >= 4.2,
-                       scotty >= 0.8.0
+                       lens >= 4.2
   
   -- Modules not exported by this package.
   Other-modules:       Test.Client,
-                       Test.TestAPI,
-                       Test.TestAPIImpl,
-                       Test.Server
+                       Test.TestAPI
   
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   -- Build-tools:         
