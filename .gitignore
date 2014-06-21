@@ -1,4 +1,10 @@
 *.hi
 *.o
 *.swp
+.cabal-sandbox/
+TestCall
+cabal.sandbox.config
+dist/
+html/
+yaml
 
