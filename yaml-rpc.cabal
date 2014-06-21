@@ -13,7 +13,7 @@ Description:         This library aimed to organize remote procedure call (RPC)
 Homepage:            http://redmine.iportnov.ru/projects/yaml-rpc
 
 -- The license under which the package is released.
-License:             LGPL-3
+License:             BSD3
 
 -- The file containing the license text.
 License-file:        LICENSE
@@ -73,3 +73,9 @@ Library
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   -- Build-tools:         
   
+Source-repository head
+  type: git
+  location: git@github.com:portnov/yaml-rpc.git
+
+
+
