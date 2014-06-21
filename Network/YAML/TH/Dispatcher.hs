@@ -1,6 +1,8 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, PatternGuards, FlexibleInstances #-}
 
-module Network.YAML.TH.Dispatcher where
+module Network.YAML.TH.Dispatcher
+  (ValueFn, ToValueFn (..), Dispatcher, generateDispatcher
+  ) where
 
 import Control.Monad
 import Data.Aeson hiding (json)
@@ -15,8 +17,10 @@ import Network.YAML.API
 
 type ValueFn = Value -> IO Value
 
+-- | Dispatcher function gets method name and returns corresponding function, or Nothing if there is no such method.
 type Dispatcher = T.Text -> Maybe ValueFn
 
+-- | Only functions of this class can be exposed
 class ToValueFn m where
   toValueFn :: m -> ValueFn
 
@@ -42,6 +46,7 @@ instance (FromJSON x, ToValueFn f) => ToValueFn (x -> f) where
                    _ -> fail $ "Invalid number of arguments"
       _ -> fail $ "Invalid request format: " ++ show rq
 
+-- | Generate dispatcher function. This will generate function called @dispatcher@.
 generateDispatcher :: API -> Q [Dec]
 generateDispatcher (API _ _ methods) = do
     method <- newName "method"

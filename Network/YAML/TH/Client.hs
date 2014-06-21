@@ -15,6 +15,7 @@ import Data.Yaml
 import qualified Network.YAML.API as API
 import Network.YAML.Caller
 
+-- | Generate data types and wrapper methods declarations from API description, read from file
 useAPI :: FilePath -> Q [Dec]
 useAPI path = do
   x <- runIO $ decodeFileEither path
@@ -22,6 +23,7 @@ useAPI path = do
     Left err -> fail $ "Cannot parse API description file " ++ path ++ ": " ++ show err
     Right api -> generateAPI api
 
+-- | Generate data types and wrapper methods declarations from API description
 generateAPI :: API.API -> Q [Dec]
 generateAPI (API.API _ types methods) = do
   ts <- mapM generateType $ M.assocs types

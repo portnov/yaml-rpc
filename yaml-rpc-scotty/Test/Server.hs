@@ -4,9 +4,7 @@ module Test.Server where
 
 import Web.Scotty
 
-import Network.YAML.API
-import Network.YAML.TH.Server
-import Network.YAML.TH.Dispatcher
+import Network.YAML
 import Network.YAML.Scotty
 
 import Test.TestAPIImpl

@@ -84,7 +84,11 @@ generateType' name = do
   fields <- convertFields constructor
   return $ API.TUser fields
 
-makeAPI :: T.Text -> [Name] -> [Name] -> ExpQ
+-- | Generate API description. Returned expression is of API type.
+makeAPI :: T.Text  -- ^ Service identification URI
+        -> [Name]  -- ^ List of exposed data type names
+        -> [Name]  -- ^ List of exposed method names
+        -> ExpQ
 makeAPI uri typeNames methodNames = do
   types <- mapM generateType typeNames
   tlist <- forM (zip typeNames types) $ \(n,t) -> [| ( $(stringLit $ nameBase n), $(return t) ) |]
@@ -98,7 +102,12 @@ makeAPI uri typeNames methodNames = do
        API.apiMethods = $(return methodsMap)
        } |]
 
-writeAPI :: FilePath -> T.Text -> [Name] -> [Name] -> Q [Dec]
+-- | Write API description to file.
+writeAPI :: FilePath  -- ^ File to write to
+         -> T.Text    -- ^ Service identification URI
+         -> [Name]    -- ^ List of exposed data type names
+         -> [Name]    -- ^ List of exposed method names
+         -> Q [Dec]
 writeAPI path uri typeNames methodNames = do
   types <- mapM generateType' typeNames
   let typesMap = M.fromList [(T.pack $ nameBase n, t) | (n, t) <- zip typeNames types]

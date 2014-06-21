@@ -11,10 +11,16 @@ import qualified Network.Wreq as W
 import Control.Lens
 import Network.HTTP.Types
 
+-- | This class will be extended in future.
 class Connection c where
   connectUri :: c -> String
 
-call :: (ToJSON args, Connection srv, FromJSON result) => srv -> T.Text -> args -> IO result
+-- | Call remote method
+call :: (ToJSON args, Connection srv, FromJSON result)
+     => srv         -- ^ Server connection; in simplest case - URL of service
+     -> T.Text      -- ^ Method name
+     -> args        -- ^ Method arguments
+     -> IO result
 call server method args = do
   let json = toJSON args
   putStrLn $ "Sending request: " ++ show json

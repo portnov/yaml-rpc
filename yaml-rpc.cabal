@@ -3,11 +3,11 @@ Name:                yaml-rpc
 Version:             1.0
 
 -- A short (one-line) description of the package.
-Synopsis:            Simple library for network (TCP/IP) YAML RPC
+Synopsis:            Simple library for network (HTTP REST-like) YAML RPC
 
 -- A longer description of the package.
 Description:         This library aimed to organize remote procedure call (RPC) 
-                     over TCP/IP network, using YAML as data serialization format.
+                     over HTTP protocol, using YAML as data serialization format.
 
 -- URL for the project homepage or repository.
 Homepage:            http://redmine.iportnov.ru/projects/yaml-rpc

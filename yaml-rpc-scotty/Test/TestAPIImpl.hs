@@ -6,9 +6,7 @@ import GHC.Generics
 import qualified Data.Text as T
 import Data.Aeson
 
-import Network.YAML.API
-import qualified Network.YAML.TH.Server as S
-import Network.YAML.TH.Dispatcher
+import Network.YAML
 
 data User = User {fullName :: T.Text, login :: T.Text}
   deriving (Eq, Show)
@@ -30,6 +28,6 @@ testSmth :: T.Text -> Something -> IO User
 testSmth t s = return $ User {login = t `T.append` smthText s, fullName = T.intercalate " " (smthList s)}
 
 api :: API
-api = $(S.makeAPI "http://home.iportnov.ru/test.api" [''User, ''Something] ['sayHello, 'testSmth])
+api = $(makeAPI "http://home.iportnov.ru/test.api" [''User, ''Something] ['sayHello, 'testSmth])
 
-$(S.writeAPI "test.api" "http://home.iportnov.ru/test.api" [''User, ''Something] ['sayHello, 'testSmth])
+$(writeAPI "test.api" "http://home.iportnov.ru/test.api" [''User, ''Something] ['sayHello, 'testSmth])

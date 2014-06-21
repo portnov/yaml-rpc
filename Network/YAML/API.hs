@@ -1,5 +1,8 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
-module Network.YAML.API where
+module Network.YAML.API
+  (Type (..), Method (..), API (..),
+   readAPI
+  ) where
 
 import Control.Monad
 import Data.Char
@@ -19,30 +22,33 @@ instance Lift T.Text where
   lift text = [| T.pack $(lift str) |]
     where str = T.unpack text
 
+-- | Data type description for API
 data Type =
-    TVoid
+    TVoid        -- ^ Like (); YAML notation for it is Void.
   | TString
   | TText
   | TInteger
   | TDouble
-  | TList Type
-  | TUser (M.Map T.Text Type)
-  | THaskell T.Text
+  | TList Type   -- ^ @[Type]@. YAML notation is @List Type@.
+  | TUser (M.Map T.Text Type) -- ^ User-defined record type
+  | THaskell T.Text -- ^ Any Haskell type
   deriving (Eq, Show)
 
 $(deriveLift ''Type)
 
+-- | API method description
 data Method = Method {
-    methodArgs :: [Type]
-  , methodReturnType :: Type
+    methodArgs :: [Type]      -- ^ Types of method arguments
+  , methodReturnType :: Type  -- ^ Method return value type
   } deriving (Eq, Show)
 
 $(deriveLift ''Method)
 
+-- | API description
 data API = API {
-    apiUri :: T.Text
-  , apiTypes :: M.Map T.Text Type
-  , apiMethods :: M.Map T.Text Method
+    apiUri :: T.Text                    -- ^ API service identification
+  , apiTypes :: M.Map T.Text Type       -- ^ Exposed data types
+  , apiMethods :: M.Map T.Text Method   -- ^ Exposed methods
   } deriving (Eq, Show)
 
 $(deriveLift ''API)
@@ -115,7 +121,6 @@ instance ToJSON API where
             "types" .= types,
             "methods" .= methods]
 
-
 testAPI :: API
 testAPI = API {
     apiUri = "http://home.iportnov.ru/test.api"
@@ -124,6 +129,7 @@ testAPI = API {
                                                 methodReturnType = TText})]
   }
 
+-- | Read API definition from file. Returned expression is of type API.
 readAPI :: FilePath -> TH.ExpQ
 readAPI path = do
   x <- TH.runIO $ (decodeFile path :: IO (Maybe API))

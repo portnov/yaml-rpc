@@ -9,13 +9,11 @@ import qualified Data.Text as T
 import Data.Text (Text)
 import Data.Aeson
 
-import Network.YAML.API
-import qualified Network.YAML.TH.Client as C
-import Network.YAML.TH.Dispatcher
+import Network.YAML
 
 import qualified Test.TestAPI as Test
 
-$(C.useAPI "test.api")
+$(useAPI "test.api")
 
 deriving instance Generic User
 deriving instance Show User

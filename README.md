@@ -10,7 +10,7 @@ RPC server should supply a set of "RPC methods", which are simply functions ::
 a -> b -> ... -> IO c. Arguments must be of class ToJSON (defined in aeson package);
 result must be of class FromJSON (defined in aeson package too). One can of
 cause use GHC Generics mechanism to derive needed instances. yaml-rpc package
-provides a (TemplateHaskell) function Network.YAML.TH.Server.generateAPI to
+provides a (TemplateHaskell) function Network.YAML.TH.Server.makeAPI to
 generate API description for server. Such API can be automatically written
 to file in simple YAML format by using function Network.YAML.TH.Server.writeAPI.
 It is possible to write different servers, which will use generated API
@@ -42,7 +42,7 @@ Please see test.api file for example of API description format.
 
 On the server side, usual workflow is as following:
 * Write some number of API data types and functions to be exposed. 
-* Call generateAPI function to generate API description.
+* Call makeAPI function to generate API description.
 * Call writeAPI function to write API description to file.
 * Call generateDispatcher function on generated API to generate function
   dispatch :: Text -> Maybe (Value -> IO Value). This function will be used by
@@ -54,7 +54,6 @@ On the client side, usual workflow is as following:
 * Call useAPI function on that file; it will generate data types definitions
   and wrapper functions to call all methods declared in file.
 * Call generated wrappers.
-
 
 Depends: ghc >= 7.6, yaml, template-haskell, th-lift, wreq, lens, scotty.
 
