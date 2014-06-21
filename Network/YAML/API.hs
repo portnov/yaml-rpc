@@ -2,6 +2,7 @@
 module Network.YAML.API where
 
 import Control.Monad
+import Data.Char
 import Data.Yaml
 import qualified Data.ByteString as B
 import qualified Data.Map as M
@@ -24,6 +25,7 @@ data Type =
   | TText
   | TInteger
   | TDouble
+  | TList Type
   | TUser (M.Map T.Text Type)
   | THaskell T.Text
   deriving (Eq, Show)
@@ -31,7 +33,7 @@ data Type =
 $(deriveLift ''Type)
 
 data Method = Method {
-    methodArgs :: M.Map T.Text Type
+    methodArgs :: [Type]
   , methodReturnType :: Type
   } deriving (Eq, Show)
 
@@ -51,7 +53,11 @@ instance FromJSON Type where
   parseJSON (String "Text") = return TText
   parseJSON (String "Integer") = return TInteger
   parseJSON (String "Double") = return TDouble
-  parseJSON (String text) = return (THaskell text)
+  parseJSON (String text) = do
+      let lst = filter (not . T.null) $ T.split isSpace text
+      if (length lst == 2) && (head lst == "List")
+        then TList `fmap` parseJSON (String $ lst !! 1)
+        else return (THaskell text)
   parseJSON x@(Object v) = do
       typeFields <- parseJSON x
       return $ TUser typeFields
@@ -60,7 +66,7 @@ instance FromJSON Type where
 instance FromJSON Method where
   parseJSON (Object v) = do
     returnType <- v .:? "return" .!= TVoid
-    args <- parseJSON $ Object $ H.delete "return" v
+    args <- v .:? "arguments" .!= []
     return $ Method args returnType
   parseJSON x = fail $ "Invalid method description: " ++ show x
 
@@ -73,7 +79,7 @@ resolveType _ t = t
 
 resolveMethodTypes :: M.Map T.Text Type -> Method -> Method
 resolveMethodTypes types (Method args returnType) =
-  let args' = M.map (resolveType types) args
+  let args' = map (resolveType types) args
       returnType' = resolveType types returnType
   in Method args' returnType'
 
@@ -91,12 +97,17 @@ instance ToJSON Type where
   toJSON TText = String "Text"
   toJSON TInteger = String "Integer"
   toJSON TDouble = String "Double"
+  toJSON (TList t) = case toJSON t of
+                       String s -> String $ "List " `T.append` s
+                       x -> error $ "Unsupported inner type for List: " ++ show x
   toJSON (TUser fields) = Object $ H.fromList [(name, toJSON t) | (name, t) <- M.assocs fields]
   toJSON (THaskell name) = String name
 
 instance ToJSON Method where
   toJSON (Method args returnType) =
-    object $ [name .= t | (name, t) <- M.assocs args] ++ ["return" .= returnType]
+    object [
+      "arguments" .= args,
+      "return" .= returnType ]
 
 instance ToJSON API where
   toJSON (API uri types methods) =
@@ -109,7 +120,7 @@ testAPI :: API
 testAPI = API {
     apiUri = "http://home.iportnov.ru/test.api"
   , apiTypes = M.fromList [("User",TUser (M.fromList [("fullName",TText),("login",TText)]))]
-  , apiMethods = M.fromList [("sayHello", Method {methodArgs = M.fromList [("user",THaskell "User")],
+  , apiMethods = M.fromList [("sayHello", Method {methodArgs = [THaskell "User"],
                                                 methodReturnType = TText})]
   }
 

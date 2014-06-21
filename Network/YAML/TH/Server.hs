@@ -8,36 +8,29 @@ import qualified Data.Map as M
 import Language.Haskell.TH
 import Language.Haskell.TH.Lift
 import qualified Data.Text as T
-import qualified Data.ByteString.Lazy as B
-import Data.Aeson
+import qualified Data.ByteString as B
+import Data.Yaml
 
 import qualified Network.YAML.API as API
 
 method :: Name -> ExpQ
-method name = do
-  var <- reify name
-  case var of
-    VarI _ funType _ _ ->
-      case funType of
-        AppT (AppT ArrowT a) (AppT io b) -> do
-            [| API.Method (M.fromList [(T.pack "arg0", $(convertType a))])
-                          ( $(convertType b) ) |]
-        _ -> fail $ "Unsupported function type: " ++ show funType
-    _ -> fail $ "Name is not of variable: " ++ show name
+method name = lift =<< method' name
 
 method' :: Name -> Q API.Method
 method' name = do
-  var <- reify name
-  case var of
-    VarI _ funType _ _ ->
-      case funType of
-        AppT (AppT ArrowT a) (AppT io b) -> do
-            argType <- convertType' a
-            resType <- convertType' b
-            return $ API.Method (M.fromList [(T.pack "arg0", argType)])
-                                resType
-        _ -> fail $ "Unsupported function type: " ++ show funType
-    _ -> fail $ "Name is not of variable: " ++ show name
+      var <- reify name
+      case var of
+        VarI _ funType _ _ -> go funType
+        _ -> fail $ "Name is not of variable: " ++ show name
+  where
+    go (AppT (ConT _) r) = do
+      resType <- convertType' r
+      return $ API.Method [] resType
+    go (AppT (AppT ArrowT a) b) = do
+      arg <- convertType' a
+      API.Method args res <- go b
+      return $ API.Method (arg : args) res
+    go t = fail $ "Unsupported function type: " ++ show t
 
 stringLit :: String -> ExpQ
 stringLit str = return $ LitE $ StringL str
@@ -50,6 +43,7 @@ convertType (ConT name)
   | "Integer" <- nameBase name = [| API.TInteger |]
   | "Double" <- nameBase name = [| API.TDouble |]
   | otherwise = [| API.THaskell $ T.pack $ $(stringLit $ nameBase name) |]
+convertType (AppT ListT t) = [| API.TList $(convertType t) |]
 convertType t = fail $ "Unsupported type: " ++ show t
 
 convertType' :: Type -> Q API.Type
@@ -60,6 +54,7 @@ convertType' (ConT name)
   | "Integer" <- nameBase name = return $ API.TInteger
   | "Double" <- nameBase name = return $ API.TDouble
   | otherwise = return $ API.THaskell (T.pack $ nameBase name)
+convertType' (AppT ListT t) = API.TList `fmap` convertType' t
 convertType' t = fail $ "Unsupported type: " ++ show t
 
 testHello :: String -> IO String

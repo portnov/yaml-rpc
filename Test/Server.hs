@@ -5,7 +5,7 @@ module Test.Server where
 import Web.Scotty
 
 import Network.YAML.API
-import qualified Network.YAML.TH.Server as S
+import Network.YAML.TH.Server
 import Network.YAML.TH.Dispatcher
 import Network.YAML.Scotty
 

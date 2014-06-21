@@ -14,6 +14,7 @@ import Network.HTTP.Types
 class Connection c where
   connectUri :: c -> String
 
+call :: (ToJSON args, Connection srv, FromJSON result) => srv -> T.Text -> args -> IO result
 call server method args = do
   let json = toJSON args
   putStrLn $ "Sending request: " ++ show json

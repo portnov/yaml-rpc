@@ -17,9 +17,19 @@ deriving instance Generic User
 instance FromJSON User
 instance ToJSON User
 
+data Something = Something {smthText :: T.Text, smthList :: [T.Text]}
+  deriving (Eq, Show, Generic)
+
+instance FromJSON Something
+instance ToJSON Something
+
 sayHello :: User -> IO T.Text
 sayHello user = return $ "Hello, " `T.append` fullName user `T.append` "!"
 
-api :: API
-api = $(S.makeAPI "http://home.iportnov.ru/test.api" [''User] ['sayHello])
+testSmth :: T.Text -> Something -> IO User
+testSmth t s = return $ User {login = t `T.append` smthText s, fullName = T.intercalate " " (smthList s)}
 
+api :: API
+api = $(S.makeAPI "http://home.iportnov.ru/test.api" [''User, ''Something] ['sayHello, 'testSmth])
+
+$(S.writeAPI "test.api" "http://home.iportnov.ru/test.api" [''User, ''Something] ['sayHello, 'testSmth])

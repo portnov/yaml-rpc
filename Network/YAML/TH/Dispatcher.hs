@@ -2,9 +2,11 @@
 
 module Network.YAML.TH.Dispatcher where
 
+import Control.Monad
 import Data.Aeson hiding (json)
 import qualified Data.Text as T
 import qualified Data.Map as M
+import qualified Data.Vector as V
 import qualified Data.HashMap.Strict as H
 import Language.Haskell.TH
 import Language.Haskell.TH.Lift
@@ -16,19 +18,29 @@ type ValueFn = Value -> IO Value
 type Dispatcher = T.Text -> Maybe ValueFn
 
 class ToValueFn m where
-  toValueFn :: [T.Text] -> m -> ValueFn
+  toValueFn :: m -> ValueFn
 
-instance (FromJSON x, ToJSON y) => ToValueFn (x -> IO y) where
-  toValueFn [name] fn = \rq -> do
+instance (ToJSON y) => ToValueFn (IO y) where
+  toValueFn fn = \rq -> do
     case rq of
-      Object v -> case H.lookup name v of
-                    Nothing -> fail $ "Argument not found: " ++ T.unpack name
-                    Just arg ->
-                      case fromJSON arg of
+      Array v -> case V.toList v of
+                   [] -> do
+                         y <- fn
+                         return $ toJSON y
+                   _ -> fail $ "Invalid number of arguments"
+      _ -> fail $ "Invalid request format: " ++ show rq
+
+instance (FromJSON x, ToValueFn f) => ToValueFn (x -> f) where
+  toValueFn fn = \rq -> do
+    case rq of
+      Array v -> case V.toList v of
+                   (arg:_) ->
+                     case fromJSON arg of
                         Error str -> fail $ "Request parsing error: " ++ str
                         Success x -> do
-                            y <- fn x
-                            return $ toJSON y
+                          toValueFn (fn x) $ Array $ V.tail v
+                   _ -> fail $ "Invalid number of arguments"
+      _ -> fail $ "Invalid request format: " ++ show rq
 
 generateDispatcher :: API -> Q [Dec]
 generateDispatcher (API _ _ methods) = do
@@ -44,8 +56,9 @@ generateDispatcher (API _ _ methods) = do
       let nameStr = T.unpack methodName
       let name = mkName nameStr 
       let other = go method ms
-      let argNames = M.keys $ methodArgs m
+      argNames <- forM (zip [0..] $ methodArgs m) $ \(i, _) ->
+                      newName $ "arg" ++ show i
       [| if $(varE method) == $(return $ LitE $ StringL nameStr)
-           then Just $ toValueFn $(lift argNames) $(varE name)
+           then Just $ toValueFn $(varE name)
            else $(other) |]
 

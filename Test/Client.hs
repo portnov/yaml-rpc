@@ -18,12 +18,17 @@ import qualified Test.TestAPI as Test
 $(C.useAPI "test.api")
 
 deriving instance Generic User
+deriving instance Show User
 instance FromJSON User
 instance ToJSON User
+
+deriving instance Generic Something
+instance FromJSON Something
+instance ToJSON Something
 
 main :: IO ()
 main = do
   let url = "http://localhost:3000" :: String
-  result <- sayHello url $ User {fullName = "Ivan Ivanov", login = "ivan"}
+  result <- testSmth url "zzzz" (Something {smthText = "ivan", smthList = ["Ivan", "Ivanov"]})
   print result
 

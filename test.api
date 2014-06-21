@@ -1,10 +1,18 @@
-uri: http://home.iportnov.ru/test.api
 types:
   User:
-    login: Text
     fullName: Text
+    login: Text
+  Something:
+    smthText: Text
+    smthList: List Text
+uri: http://home.iportnov.ru/test.api
 methods:
   sayHello:
-    arg0: User
     return: Text
-
+    arguments:
+    - User
+  testSmth:
+    return: User
+    arguments:
+    - Text
+    - Something
