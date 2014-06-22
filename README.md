@@ -4,7 +4,7 @@ YAML-RPC README
 Ilya V. Portnov <portnov84@rambler.ru>
 
 The yaml-rpc package contains a small library to organize remote procedure call
-(RPC) over TCP/IP network, using YAML as data serialization format.
+(RPC) over TCP/IP network, using JSON as data serialization format.
 
 RPC server should supply a set of "RPC methods", which are simply functions ::
 a -> b -> ... -> IO c. Arguments must be of class ToJSON (defined in aeson package);
@@ -14,17 +14,16 @@ provides a (TemplateHaskell) function Network.YAML.TH.Server.makeAPI to
 generate API description for server. Such API can be automatically written
 to file in simple YAML format by using function Network.YAML.TH.Server.writeAPI.
 It is possible to write different servers, which will use generated API
-description and provide HTTP REST YAML services with that API. Currently there
+description and provide HTTP REST JSON services with that API. Currently there
 is only one implementation using scotty package; it is provided by
 yaml-rpc-scotty package. Please see yaml-rpc-scotty/Test/{Server.hs,
 TestAPIImpl.hs} files for example usage.
 
-RPC client calls that functions via HTTP REST YAML interface. So, it can be
-used either from Haskell or from any other environment. For example, though
-HTTP REST YAML is nearly a superset of HTTP REST JSON, it can be easily used
-from JavaScript with JQuery or another framework.
+RPC client calls that functions via HTTP REST JSON interface. So, it can be
+used either from Haskell or from any other environment. For example,  it can be
+easily used from JavaScript with JQuery or another framework.
 For Haskell, yaml-rpc package provides a function Network.YAML.Caller.call to
-call any method via HTTP REST YAML interface. Moreover, a (TemplateHaskell)
+call any method via HTTP REST JSON interface. Moreover, a (TemplateHaskell)
 function Network.YAML.TH.Client.useAPI function will read API description from
 file (in YAML format) and generate wrapper methods for calling respective
 remote methods. Please see Test/Client.hs for example usage.

@@ -61,8 +61,6 @@ generateDispatcher (API _ _ methods) = do
       let nameStr = T.unpack methodName
       let name = mkName nameStr 
       let other = go method ms
-      argNames <- forM (zip [0..] $ methodArgs m) $ \(i, _) ->
-                      newName $ "arg" ++ show i
       [| if $(varE method) == $(return $ LitE $ StringL nameStr)
            then Just $ toValueFn $(varE name)
            else $(other) |]
