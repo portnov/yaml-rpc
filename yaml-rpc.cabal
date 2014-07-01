@@ -1,6 +1,6 @@
 Name:                yaml-rpc
 
-Version:             1.0
+Version:             1.0.1
 
 -- A short (one-line) description of the package.
 Synopsis:            Simple library for network (HTTP REST-like) YAML RPC
@@ -34,7 +34,9 @@ Build-type:          Simple
 
 -- Extra files to be distributed with the package, such as examples or
 -- a README.
-Extra-source-files:  README.md
+Extra-source-files:  README.md,
+                     Test/Client.hs,
+                     Test/TestAPI.hs
 
 -- Constraint on the version of Cabal needed to build this package.
 Cabal-version:       >= 1.8
@@ -65,13 +67,6 @@ Library
                        http-types >= 0.8.5,
                        http-client >= 0.3.3.1,
                        lens >= 4.2
-  
-  -- Modules not exported by this package.
-  Other-modules:       Test.Client,
-                       Test.TestAPI
-  
-  -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
-  -- Build-tools:         
   
 Source-repository head
   type: git
