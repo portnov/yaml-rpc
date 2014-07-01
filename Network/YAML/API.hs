@@ -5,6 +5,7 @@ module Network.YAML.API
   ) where
 
 import Control.Monad
+import Control.Monad.IO.Class
 import Data.Char
 import Data.Yaml
 import qualified Data.ByteString as B

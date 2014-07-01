@@ -3,6 +3,7 @@
 module Network.YAML.TH.Client (generateAPI, useAPI) where
 
 import Control.Monad
+import Control.Monad.IO.Class
 import qualified Data.Map as M
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
@@ -53,14 +54,14 @@ convertType (API.THaskell name) = return $ ConT $ mkName (T.unpack name)
 convertType (API.TList t) = AppT ListT `fmap` convertType t
 convertType (API.TUser _) = fail $ "User-defined types cannot be nested"
 
-methodType :: API.Method -> Q Type
-methodType (API.Method methodArgs methodRet) = go (methodArgs ++ [methodRet])
+methodType :: Name -> API.Method -> Q Type
+methodType m (API.Method methodArgs methodRet) = go m (methodArgs ++ [methodRet])
   where
-    go [r] = do
+    go m [r] = do
       r' <- convertType r
-      return $ AppT (ConT $ mkName "IO") r'
-    go (t: ts) = do
-      result <- go ts
+      return $ AppT (VarT m) r'
+    go m (t: ts) = do
+      result <- go m ts
       t' <- convertType t
       return $ AppT (AppT ArrowT t') result
 
@@ -74,9 +75,16 @@ generateMethod (text, method) = do
   args <- forM argNames $ \name -> [| toJSON $(varE name) |]
   let c = clause (varP srv: argPatterns) (normalB [| call $(varE srv) $(lift text) $(return $ ListE args) |]) []
       cName = mkName $ T.unpack text
-  mt <- methodType method
+  monadName <- newName "monad"
+  connName <- newName "connection"
+  let connType = VarT connName
+  let monadType = VarT monadName
+  mt <- methodType monadName method
+  let monadIO = mkName "MonadIO"
+  let funType = AppT (AppT ArrowT connType) mt
+  let resType = ForallT [PlainTV connName, PlainTV monadName] [ClassP monadIO [VarT monadName], ClassP (mkName "Connection") [VarT connName]] funType
   sequence [
-    sigD cName [t| (Connection c) => c -> $(return mt) |],
+    sigD cName (return resType),
     funD cName [c] ]
 
 

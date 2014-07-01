@@ -3,6 +3,7 @@
 module Test.Client where
 
 import GHC.Generics
+import Control.Monad.IO.Class
 import Data.Maybe
 import qualified Data.Map as M
 import qualified Data.Text as T
