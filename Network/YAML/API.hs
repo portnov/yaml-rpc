@@ -30,6 +30,7 @@ data Type =
   | TText
   | TInteger
   | TDouble
+  | TMaybe Type  -- ^ @Maybe Type@. YAML notation is @Maybe Type@.
   | TList Type   -- ^ @[Type]@. YAML notation is @List Type@.
   | TUser (M.Map T.Text Type) -- ^ User-defined record type
   | THaskell T.Text -- ^ Any Haskell type
@@ -62,8 +63,11 @@ instance FromJSON Type where
   parseJSON (String "Double") = return TDouble
   parseJSON (String text) = do
       let lst = filter (not . T.null) $ T.split isSpace text
-      if (length lst == 2) && (head lst == "List")
-        then TList `fmap` parseJSON (String $ lst !! 1)
+      if (length lst == 2)
+        then case head lst of
+          "List" -> TList `fmap` parseJSON (String $ lst !! 1)
+          "Maybe" -> TMaybe `fmap` parseJSON (String $ lst !! 1)
+          _ -> return (THaskell text)
         else return (THaskell text)
   parseJSON x@(Object v) = do
       typeFields <- parseJSON x
@@ -107,6 +111,9 @@ instance ToJSON Type where
   toJSON (TList t) = case toJSON t of
                        String s -> String $ "List " `T.append` s
                        x -> error $ "Unsupported inner type for List: " ++ show x
+  toJSON (TMaybe t) = case toJSON t of
+                       String s -> String $ "Maybe " `T.append` s
+                       x -> error $ "Unsupported inner type for Maybe: " ++ show x
   toJSON (TUser fields) = Object $ H.fromList [(name, toJSON t) | (name, t) <- M.assocs fields]
   toJSON (THaskell name) = String name
 

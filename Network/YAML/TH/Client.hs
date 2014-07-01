@@ -52,6 +52,7 @@ convertType API.TInteger = return $ ConT $ mkName "Integer"
 convertType API.TDouble = return $ ConT $ mkName "Double"
 convertType (API.THaskell name) = return $ ConT $ mkName (T.unpack name)
 convertType (API.TList t) = AppT ListT `fmap` convertType t
+convertType (API.TMaybe t) = AppT (ConT $ mkName "Maybe") `fmap` convertType t
 convertType (API.TUser _) = fail $ "User-defined types cannot be nested"
 
 methodType :: Name -> API.Method -> Q Type

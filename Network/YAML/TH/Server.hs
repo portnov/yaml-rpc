@@ -44,6 +44,9 @@ convertType (ConT name)
   | "Double" <- nameBase name = [| API.TDouble |]
   | otherwise = [| API.THaskell $ T.pack $ $(stringLit $ nameBase name) |]
 convertType (AppT ListT t) = [| API.TList $(convertType t) |]
+convertType (AppT (ConT con) t)
+  | "Maybe" <- nameBase con = [| API.TMaybe $(convertType t) |]
+  | otherwise = fail $ "Unsupported constructor in type: " ++ show t
 convertType t = fail $ "Unsupported type: " ++ show t
 
 convertType' :: Type -> Q API.Type
@@ -55,6 +58,9 @@ convertType' (ConT name)
   | "Double" <- nameBase name = return $ API.TDouble
   | otherwise = return $ API.THaskell (T.pack $ nameBase name)
 convertType' (AppT ListT t) = API.TList `fmap` convertType' t
+convertType' (AppT (ConT con) t)
+  | "Maybe" <- nameBase con = API.TMaybe `fmap` convertType' t
+  | otherwise = fail $ "Unsupported constructor in type: " ++ show t
 convertType' t = fail $ "Unsupported type: " ++ show t
 
 testHello :: String -> IO String
