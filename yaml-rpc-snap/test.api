@@ -1,0 +1,18 @@
+types:
+  User:
+    fullName: Text
+    login: Text
+  Something:
+    smthText: Text
+    smthList: List Text
+uri: http://home.iportnov.ru/test.api
+methods:
+  sayHello:
+    return: Text
+    arguments:
+    - User
+  testSmth:
+    return: User
+    arguments:
+    - Text
+    - Something
