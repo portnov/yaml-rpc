@@ -17,4 +17,5 @@ main :: IO ()
 main = httpServe (setPort 3000 mempty) site
 
 site :: Snap ()
-site = route [("/:method", servePost dispatcher)]
+site = route [("/:method", handleApiPost dispatcher)]
+

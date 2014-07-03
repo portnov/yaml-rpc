@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.YAML.Scotty (servePost, servePostT) where
+module Network.YAML.Scotty (servePost, servePostT, handleApi, handleApiT) where
 
 import Control.Monad.Morph
 import Control.Monad.IO.Class
@@ -15,7 +15,10 @@ import Network.YAML.TH.Dispatcher
 
 -- | Scotty handler. Serves each method on @/:method@.
 servePost :: Dispatcher IO -> ScottyM ()
-servePost dispatcher = post "/:method" $ do
+servePost dispatcher = post "/:method" $ handleApi dispatcher
+
+handleApi :: Dispatcher IO -> ActionM ()
+handleApi dispatcher = do
     methodName <- param "method"
     case dispatcher methodName of
       Nothing -> status status404
@@ -26,7 +29,10 @@ servePost dispatcher = post "/:method" $ do
 
 -- | Scotty handler. Serves each method on @/:method@.
 servePostT :: (Trans.ScottyError e, MonadIO m) => Dispatcher m -> Trans.ScottyT e m ()
-servePostT dispatcher = Trans.post "/:method" $ do
+servePostT dispatcher = Trans.post "/:method" $ handleApiT dispatcher
+
+handleApiT :: (Trans.ScottyError e, MonadIO m) => Dispatcher m -> Trans.ActionT e m ()
+handleApiT dispatcher = do
     methodName <- Trans.param "method"
     case dispatcher methodName of
       Nothing -> Trans.status status404

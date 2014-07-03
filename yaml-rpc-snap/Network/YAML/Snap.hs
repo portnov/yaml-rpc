@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.YAML.Snap where
+module Network.YAML.Snap (handleApi, handleApiPost) where
 
 import qualified Data.ByteString as B
 import qualified Data.Text.Encoding as TE
@@ -14,8 +14,11 @@ errorMsg status msg = do
   writeBS msg
   finishWith =<< getResponse
 
-servePost :: Dispatcher IO -> Snap ()
-servePost dispatcher = do
+handleApiPost :: Dispatcher IO -> Snap ()
+handleApiPost dispatcher = method POST $ handleApi dispatcher
+
+handleApi :: Dispatcher IO -> Snap ()
+handleApi dispatcher = do
   maybeMethod <- getParam "method"
   case maybeMethod of
     Nothing -> errorMsg 400 "No method name specified"
