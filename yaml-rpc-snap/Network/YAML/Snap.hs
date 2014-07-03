@@ -14,9 +14,11 @@ errorMsg status msg = do
   writeBS msg
   finishWith =<< getResponse
 
+-- | Snap handler for POST method
 handleApiPost :: Dispatcher IO -> Snap ()
 handleApiPost dispatcher = method POST $ handleApi dispatcher
 
+-- | Snap handler for any method
 handleApi :: Dispatcher IO -> Snap ()
 handleApi dispatcher = do
   maybeMethod <- getParam "method"

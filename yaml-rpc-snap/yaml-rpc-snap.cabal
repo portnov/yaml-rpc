@@ -17,13 +17,13 @@ Library
   Exposed-modules:   Network.YAML.Snap
   Build-depends:       base >= 3 && <= 5,
                        transformers >= 0.3.0.0,
-                       mmorph >= 1.0.3,
+                       bytestring >= 0.10.0.2,
                        aeson >= 0.7.0.6,
                        yaml,
                        containers,
                        text >= 1.1.1.3,
                        http-types >= 0.8.5,
-                       snap >= 0.13.2.7
+                       snap >= 0.13.2.7,
                        yaml-rpc >= 1.0.2
 
   Other-modules:     Test.Server,
